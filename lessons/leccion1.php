@@ -18,7 +18,7 @@ $lesson_id = 1;
         <h2>Módulo 1: El Esqueleto de la Web con HTML 🦴</h2>
         <div class="activity-instructions">
             <h3>Teoría y Conceptos Clave</h3>
-            <p><strong>Instructor:</strong> Fernando Mojica</p>
+            <p><strong>Instructor:</strong>Iván Gómez</p>
             <p>¡Hola a todos! Antes de empezar a escribir código, es crucial entender qué es HTML. Piensen en HTML (HyperText Markup Language) como el esqueleto de una casa. No define los colores ni los muebles, pero sí establece las habitaciones, las puertas y las ventanas. En la web, esto se traduce en títulos, párrafos, imágenes y enlaces.</p>
             <p>Hoy nos enfocaremos en las <strong>etiquetas</strong>, que son como los ladrillos de nuestra página. Cada etiqueta le da un significado al contenido que envuelve. Por ejemplo, <code>&lt;h1&gt;</code> le dice al navegador "esto es un título muy importante", y <code>&lt;p&gt;</code> le dice "esto es un párrafo de texto". ¡Vamos a construir nuestro primer esqueleto!</p>
         </div>

@@ -19,7 +19,7 @@ $lesson_id = 3;
         <h2>Módulo 3: Formularios y Diseño Flexbox 📝</h2>
         <div class="activity-instructions">
             <h3>Teoría y Conceptos Clave</h3>
-            <p><strong>Instructor:</strong> Carlos Herrera</p>
+            <p><strong>Instructor:</strong>Emilio Acevedo</p>
             <p>¡Bienvenidos al segundo día! Hoy subimos el nivel. Primero, veremos los <strong>formularios</strong>, que son la manera en que nuestras páginas pueden "escuchar" al usuario, permitiéndole enviar datos. Luego, abordaremos un concepto fundamental del diseño moderno: <strong>Flexbox</strong>.</p>
             <p>Flexbox es un módulo de diseño de CSS que nos permite alinear y distribuir el espacio entre los elementos de una manera mucho más sencilla y, sobre todo, flexible. Olvídense de los viejos trucos para centrar un `div`; con Flexbox, organizar elementos en filas o columnas y hacer que se adapten al espacio disponible es increíblemente intuitivo. ¡Prepárense para diseñar layouts como profesionales!</p>
         </div>

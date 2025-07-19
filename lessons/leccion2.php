@@ -19,7 +19,7 @@ $lesson_id = 2;
             <h2>Módulo 2: Dando Estilo con CSS 🎨</h2>
             <div class="activity-instructions">
                 <h3>Teoría y Conceptos Clave</h3>
-                <p><strong>Instructora:</strong> Sofía Vargas</p>
+                <p><strong>Instructora:</strong>Fernando Mojica</p>
                 <p>¡Hola, equipo! Ahora que ya tenemos el esqueleto de nuestra página, vamos a vestirlo. Para eso usamos CSS (Cascading Style Sheets). CSS nos permite aplicar estilos como colores, fuentes y espaciados.</p>
                 <p>La magia de CSS reside en los <strong>selectores</strong>. Un selector es una regla que le dice al navegador a qué elemento HTML queremos aplicarle un estilo. Hoy aprenderemos los tres selectores básicos: por <strong>etiqueta</strong> (para afectar a todas las etiquetas de un tipo, como todos los `h1`), por <strong>clase</strong> (para afectar a todos los elementos que compartan una clase, como `.noticia-destacada`) y por <strong>ID</strong> (para afectar a un único elemento específico, como `#menu-principal`).</p>
             </div>
