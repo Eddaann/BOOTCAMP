@@ -1,16 +1,85 @@
-Bootcamp Web - Plataforma Interactiva de AprendizajeBootcamp Web es una aplicación web educativa diseñada para enseñar los fundamentos del desarrollo web (HTML, CSS) de una manera interactiva y gamificada. Los usuarios pueden registrarse, seguir lecciones paso a paso, completar desafíos prácticos y competir en una tabla de clasificación basada en puntos de experiencia (XP).✨ Características PrincipalesAutenticación de Usuarios: Sistema completo de registro, inicio de sesión y cierre de sesión.Recuperación de Contraseña: Funcionalidad de "olvidé mi contraseña" que envía un enlace de restablecimiento por correo electrónico utilizando PHPMailer. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/forgot-password.php]Panel de Usuario (Dashboard): Muestra el progreso del usuario, las lecciones disponibles y las estadísticas como nivel y XP. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/dashboard.php]Lecciones Interactivas: Módulos de aprendizaje estructurados por días, con teoría y actividades prácticas interactivas. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/lessons/leccion1.php, eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/lessons/leccion2.php, eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/lessons/leccion3.php, eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/lessons/leccion4.php]Sistema de Progresión: Las lecciones se desbloquean a medida que el usuario completa las anteriores. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/includes/auth.php]Gamificación: Los usuarios ganan puntos de experiencia (XP) al completar lecciones, lo que les permite subir de nivel. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/complete_lesson.php]Tabla de Clasificación (Leaderboard): Un ranking de usuarios basado en su XP acumulado para fomentar la competencia sana. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/leaderboard.php]Perfiles de Usuario Editables: Los usuarios pueden actualizar su nombre, apodo y subir una foto de perfil. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/profile.php]Tema Claro/Oscuro: Un interruptor de tema para mejorar la experiencia del usuario. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/assets/js/theme-switcher.js]🛠️ Tecnologías UtilizadasBackend: PHPBase de Datos: MySQL / MariaDBFrontend: HTML5, CSS3, JavaScriptLibrerías:PHPMailer: Para el envío de correos electrónicos.🚀 Instalación y Puesta en MarchaSigue estos pasos para configurar el proyecto en tu entorno local.PrerrequisitosUn servidor web local (XAMPP, WAMP, MAMP, etc.).PHP (versión 8.0 o superior recomendada).MySQL o MariaDB.PasosClonar el Repositoriogit clone <URL-DEL-REPOSITORIO>
+Bootcamp Web - Plataforma Interactiva de Aprendizaje
+Bootcamp Web es una aplicación educativa diseñada para enseñar los fundamentos del desarrollo web (HTML, CSS, JavaScript) de forma interactiva y gamificada. Los usuarios pueden registrarse, avanzar en lecciones estructuradas, completar desafíos prácticos y competir en una tabla de clasificación basada en puntos de experiencia (XP).
+
+✨ Características Principales
+
+Autenticación de Usuarios: Registro, inicio de sesión y cierre de sesión seguros.Ref: includes/auth.php
+Recuperación de Contraseña: Envia un enlace de restablecimiento por correo usando PHPMailer.Ref: forgot-password.php
+Panel de Usuario: Visualiza el progreso, lecciones disponibles, nivel y XP del usuario.Ref: dashboard.php
+Lecciones Interactivas: Módulos estructurados por días con teoría y ejercicios prácticos.Ref: lessons/leccion1.php, leccion2.php, leccion3.php, leccion4.php
+Sistema de Progresión: Desbloquea lecciones al completar las anteriores.Ref: includes/auth.php
+Gamificación: Gana XP al completar lecciones y sube de nivel.Ref: complete_lesson.php
+Tabla de Clasificación: Ranking de usuarios basado en XP para una competencia sana.Ref: leaderboard.php
+Perfiles Editables: Actualiza nombre, apodo y foto de perfil.Ref: profile.php
+Tema Claro/Oscuro: Interruptor de tema para una mejor experiencia de usuario.Ref: assets/js/theme-switcher.js
+
+
+🛠️ Tecnologías Utilizadas
+
+Backend: PHP
+Base de Datos: MySQL / MariaDB
+Frontend: HTML5, CSS3, JavaScript
+Librerías:
+PHPMailer: Envío de correos electrónicos.
+
+
+
+
+🚀 Instalación y Configuración
+Sigue estos pasos para configurar el proyecto en tu entorno local.
+Prerrequisitos
+
+Servidor web local (XAMPP, WAMP, MAMP, etc.).
+PHP 8.0 o superior.
+MySQL o MariaDB.
+
+Pasos
+
+Clonar el Repositorio
+git clone <URL-DEL-REPOSITORIO>
 cd <NOMBRE-DEL-DIRECTORIO>
-Configurar la Base de DatosAbre tu gestor de base de datos (como phpMyAdmin).Crea una nueva base de datos llamada bootcamp_db. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/includes/db.php]Importa el archivo bootcamp_db.sql. Esto creará todas las tablas necesarias y cargará los datos iniciales de las lecciones. [cite: eddaann/bootcamp/BOOTCAMP-c2ad858b5e0b59284dae9b9f11a3b7b256c53ae3/bootcamp_db.sql]Configurar la Conexión a la Base de DatosAbre el archivo includes/db.php.Asegúrate de que las credenciales ($host, $db, $user, $pass) coincidan con la configuración de tu servidor.$host = 'localhost';
+
+
+Configurar la Base de Datos
+
+Abre tu gestor de base de datos (ej. phpMyAdmin).
+Crea una base de datos llamada bootcamp_db.Ref: includes/db.php
+Importa el archivo bootcamp_db.sql para crear las tablas y cargar datos iniciales.Ref: bootcamp_db.sql
+
+
+Configurar la Conexión a la Base de Datos
+
+Edita includes/db.php con las credenciales de tu servidor:$host = 'localhost';
 $db   = 'bootcamp_db';
 $user = 'root';
 $pass = ''; // Tu contraseña de MySQL
-Configurar el Envío de Correos (PHPMailer)Abre el archivo forgot-password.php.Actualiza las credenciales SMTP con las tuyas (se recomienda usar una contraseña de aplicación de Gmail).// --- ¡CONFIGURA TUS CREDENCIALES AQUÍ! ---
-$mail->Username   = 'tu-correo@gmail.com';
-$mail->Password   = 'tu-contraseña-de-aplicacion';
-Nota: Para usar Gmail, necesitas generar una "Contraseña de aplicación". Puedes encontrar cómo hacerlo en la ayuda de Google.Iniciar el ServidorMueve la carpeta del proyecto al directorio raíz de tu servidor web (e.g., htdocs en XAMPP).Inicia los servicios de Apache y MySQL.Abre tu navegador y ve a http://localhost/<NOMBRE-DEL-DIRECTORIO>.📂 Estructura del Proyecto/
+
+
+
+
+Configurar el Envío de Correos (PHPMailer)
+
+Edita forgot-password.php con tus credenciales SMTP:$mail->Username = 'tu-correo@gmail.com';
+$mail->Password = 'tu-contraseña-de-aplicacion';
+
+
+Nota: Usa una contraseña de aplicación de Gmail para Gmail.
+
+
+Iniciar el Servidor
+
+Mueve el proyecto al directorio raíz de tu servidor web (ej. htdocs en XAMPP).
+Inicia Apache y MySQL.
+Abre http://localhost/<NOMBRE-DEL-DIRECTORIO> en tu navegador.
+
+
+
+
+📂 Estructura del Proyecto
+/
 ├── assets/                 # Archivos CSS y JavaScript
 ├── includes/               # Módulos PHP reutilizables
-├── lessons/                # Archivos de cada lección
+├── lessons/                # Archivos de lecciones
 ├── phpmailer/              # Librería PHPMailer
 ├── uploads/                # Directorio para avatares
 ├── bootcamp_db.sql         # Script de la base de datos
@@ -24,3 +93,22 @@ Nota: Para usar Gmail, necesitas generar una "Contraseña de aplicación". Puede
 ├── profile.php             # Edición del perfil de usuario
 ├── register.php            # Formulario de registro
 └── reset-password.php      # Formulario para nueva contraseña
+
+
+📝 Notas Adicionales
+
+Asegúrate de que el directorio uploads/ tenga permisos de escritura para subir fotos de perfil.
+Revisa la documentación de PHPMailer para configuraciones avanzadas de correo.
+Este proyecto está diseñado para entornos educativos, pero puede extenderse con más lecciones o funcionalidades.
+
+
+🤝 Contribuciones
+¡Las contribuciones son bienvenidas! Si deseas mejorar el proyecto:
+
+Haz un fork del repositorio.
+Crea una rama para tu cambio (git checkout -b feature/nueva-funcionalidad).
+Envía un pull request con una descripción clara de los cambios.
+
+
+📧 Contacto
+Para dudas o sugerencias, contáctame a través de GitHub Issues.
