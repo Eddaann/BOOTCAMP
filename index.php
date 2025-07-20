@@ -1,41 +1,25 @@
-<?php session_start(); ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Bootcamp - Crea tu primera página web</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="assets/css/styles.css">
-</head>
-<body>
-  <header class="navbar">
-    <div class="container">
-      <h1><a href="index.php" style="color:white; text-decoration:none;">Bootcamp Web</a></h1>
-      <nav>
-        <a href="index.php">Inicio</a>
-        <?php if (!isset($_SESSION['user_id'])): ?>
-          <a href="login.php">Iniciar Sesión</a>
-          <a href="register.php">Registrarse</a>
-        <?php else: ?>
-          <a href="dashboard.php">Mi Panel</a>
-          <a href="logout.php">Cerrar Sesión</a>
-        <?php endif; ?>
-      </nav>
-    </div>
-  </header>
+<?php
+$page_title = "Crea tu primera página web";
+$is_lesson_page = false;
+include 'includes/header.php';
+?>
 
   <section class="hero">
-    <div class="container">
-      <h2>¡Crea tu primera página web desde cero!</h2>
-      <p>Un bootcamp gratuito para que aprendas las bases del desarrollo web.</p>
-      <a href="register.php" class="btn">Regístrate Ahora</a>
+    <div class="container" style="text-align: center; padding: 4rem 2rem;">
+      <h2 style="font-size: 3rem; margin-bottom: 1rem;">¡Crea tu primera página web desde cero!</h2>
+      <p style="font-size: 1.25rem; max-width: 600px; margin: auto;">Un bootcamp gratuito, interactivo y moderno para que aprendas las bases del desarrollo web.</p>
+      <a href="register.php" class="btn" style="display: inline-block; margin-top: 2rem; padding: 1rem 2.5rem; background: var(--primary-color); color: white; border-radius: 50px; font-weight: 600; text-decoration: none; font-size: 1.1rem; transition: transform 0.3s, box-shadow 0.3s;">¡Empieza a Aprender Ahora!</a>
     </div>
   </section>
 
-  <footer>
-    <div class="container">
-      <p>&copy; <?= date('Y') ?> Bootcamp Web. Todos los derechos reservados.</p>
-    </div>
-  </footer>
-</body>
-</html>
+  <div class="container">
+      <h3 style="text-align:center; font-size: 2rem; margin-bottom: 3rem;">¿Qué aprenderás?</h3>
+      <div class="lesson-grid">
+          <div class="lesson-card"><h3>HTML Básico</h3><p>Aprende la estructura fundamental de la web con HTML.</p></div>
+          <div class="lesson-card"><h3>CSS Esencial</h3><p>Aplica estilos y haz que tu página se vea increíble.</p></div>
+          <div class="lesson-card"><h3>Diseño Adaptable</h3><p>Asegúrate que tu sitio funcione en cualquier dispositivo.</p></div>
+          <div class="lesson-card"><h3>Publicación Web</h3><p>Sube tu página a internet y compártela con el mundo.</p></div>
+      </div>
+  </div>
+
+<?php include 'includes/footer.php'; ?>

@@ -3,39 +3,56 @@ session_start();
 require_once 'includes/db.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    http_response_code(403);
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lesson_id'])) {
     $user_id = $_SESSION['user_id'];
-    $lesson_id = $_POST['lesson_id'];
+    $lesson_id = filter_var($_POST['lesson_id'], FILTER_VALIDATE_INT);
+
+    if ($lesson_id === false) {
+        http_response_code(400);
+        exit();
+    }
 
     try {
-        // Verificar si ya existe un registro para evitar duplicados
-        $stmt = $pdo->prepare("SELECT id FROM user_progress WHERE user_id = ? AND lesson_id = ?");
-        $stmt->execute([$user_id, $lesson_id]);
-        
-        if ($stmt->rowCount() == 0) {
-            // Si no existe, inserta el nuevo progreso como completado
-            $stmt_insert = $pdo->prepare(
+        $pdo->beginTransaction();
+
+        // Verificar si la lección ya fue completada para no dar XP de más
+        $stmt_check = $pdo->prepare("SELECT id FROM user_progress WHERE user_id = ? AND lesson_id = ?");
+        $stmt_check->execute([$user_id, $lesson_id]);
+        $already_completed = $stmt_check->rowCount() > 0;
+
+        if (!$already_completed) {
+            // Marcar la lección como completada
+            $stmt_progress = $pdo->prepare(
                 "INSERT INTO user_progress (user_id, lesson_id, status, completado_en) VALUES (?, ?, 'completado', NOW())"
             );
-            $stmt_insert->execute([$user_id, $lesson_id]);
-        } else {
-            // Si ya existe, solo actualiza el estado y la fecha
-            $stmt_update = $pdo->prepare(
-                "UPDATE user_progress SET status = 'completado', completado_en = NOW() WHERE user_id = ? AND lesson_id = ?"
-            );
-            $stmt_update->execute([$user_id, $lesson_id]);
+            $stmt_progress->execute([$user_id, $lesson_id]);
+
+            // Otorgar XP y recalcular nivel
+            $xp_ganada = 100; // XP por cada lección
+            $stmt_user = $pdo->prepare("UPDATE users SET xp = xp + ? WHERE id = ?");
+            $stmt_user->execute([$xp_ganada, $user_id]);
+
+            // Actualizar nivel (ejemplo: nuevo nivel cada 250 XP)
+            $stmt_xp = $pdo->prepare("SELECT xp FROM users WHERE id = ?");
+            $stmt_xp->execute([$user_id]);
+            $current_xp = $stmt_xp->fetchColumn();
+            $new_level = floor($current_xp / 250) + 1;
+
+            $stmt_level = $pdo->prepare("UPDATE users SET nivel = ? WHERE id = ?");
+            $stmt_level->execute([$new_level, $user_id]);
         }
+        
+        $pdo->commit();
 
     } catch (PDOException $e) {
-        // En un proyecto real, aquí manejarías el error (p.ej. registrarlo en un log)
-        // Por ahora, simplemente redirigimos.
+        $pdo->rollBack();
+        error_log("Error al completar lección: " . $e->getMessage());
     }
 }
 
-// Redirigir siempre al dashboard
 header("Location: dashboard.php");
 exit();

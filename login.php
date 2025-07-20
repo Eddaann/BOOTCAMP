@@ -22,7 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['nombre'] = $user['nombre'];
-            header('Location: dashboard.php');
+            
+            $redirect_url = $_SESSION['redirect_url'] ?? 'dashboard.php';
+            unset($_SESSION['redirect_url']);
+            header('Location: ' . $redirect_url);
             exit();
         } else {
             $error = 'Correo o contraseña incorrectos.';
@@ -30,7 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Usamos el header principal para consistencia
+$page_title = "Iniciar Sesión";
+$is_lesson_page = false;
 include 'includes/header.php';
 ?>
 
@@ -50,6 +54,11 @@ include 'includes/header.php';
             <div class="form-group">
                 <label for="password">Contraseña</label>
                 <input type="password" id="password" name="password" required>
+                
+                <!-- ¡AQUÍ ESTÁ EL CAMBIO! -->
+                <div style="text-align: right; margin-top: 0.5rem;">
+                    <a href="forgot-password.php" style="font-size: 0.9rem;">¿Olvidaste tu contraseña?</a>
+                </div>
             </div>
             <button type="submit" class="btn-submit">Entrar</button>
         </form>

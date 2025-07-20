@@ -1,34 +1,33 @@
 /*
 ============================================
  ARCHIVO CSS DEFINITIVO PARA BOOTCAMP WEB
- Versión: 1.0
- Contiene: Estilos base, Navbar, Footer, 
-           Dashboard, Formularios (Login/Registro),
-           y Lecciones Interactivas.
+ Versión: 2.4 (Correcciones finales)
 ============================================
 */
 
 /* --- Fuentes y Variables Globales --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --primary-color: #4f46e5;
-  --secondary-color: #ec4899;
-  --dark-color: #1f2937;
-  --light-color: #f3f4f6;
+  --primary-color: #6d28d9; /* Morado vibrante */
+  --secondary-color: #db2777; /* Rosa intenso para acentos */
+  --dark-color: #111827; /* Negro suave para texto */
+  --light-color: #f9fafb; /* Gris muy claro para fondos */
   --white-color: #fff;
-  --grey-color: #9ca3af;
+  --grey-color: #6b7280;
   --success-color: #10b981;
   --error-color: #ef4444;
+  --border-color: #e5e7eb; /* Para bordes sutiles */
 }
 
 /* --- Estilos Base y Layout --- */
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif; /* Fuente más moderna */
   background-color: var(--light-color);
-  color: #374151;
+  color: var(--dark-color);
   line-height: 1.7;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
@@ -37,12 +36,12 @@ body {
   padding: 0 2rem;
 }
 
-main .container {
+main {
     padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-bottom: 4rem;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     color: var(--dark-color);
     font-weight: 700;
 }
@@ -50,9 +49,11 @@ h1, h2, h3 {
 a {
     color: var(--primary-color);
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 a:hover {
-    text-decoration: underline;
+    color: var(--secondary-color);
+    text-decoration: none;
 }
 
 /* --- Navbar y Footer --- */
@@ -60,9 +61,11 @@ a:hover {
   background: var(--white-color);
   padding: 1rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 .navbar .container {
   display: flex;
@@ -72,6 +75,11 @@ a:hover {
 .navbar h1 a {
   color: var(--primary-color);
   font-weight: 700;
+  font-size: 1.5rem;
+}
+.navbar nav {
+    display: flex;
+    align-items: center;
 }
 .navbar nav a {
   color: var(--dark-color);
@@ -81,7 +89,6 @@ a:hover {
 }
 .navbar nav a:hover {
   color: var(--primary-color);
-  text-decoration: none;
 }
 footer {
   text-align: center;
@@ -89,7 +96,26 @@ footer {
   background: var(--dark-color);
   color: var(--light-color);
   margin-top: 3rem;
+  transition: background-color 0.3s;
 }
+
+/* --- Mensajes Flash --- */
+.flash-message {
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    border: 1px solid;
+    animation: fadeIn 0.5s;
+    text-align: center;
+    font-weight: 500;
+}
+.flash-message.success {
+    background-color: #ecfdf5;
+    color: #047857;
+    border-color: #6ee7b7;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
 
 /* --- Formularios de Login y Registro --- */
 .page-container {
@@ -101,7 +127,9 @@ footer {
     background: var(--white-color);
     padding: 2.5rem;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 .form-wrapper h2 {
     text-align: center;
@@ -127,11 +155,13 @@ footer {
     font-size: 1rem;
     box-sizing: border-box;
     transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--light-color);
+    color: var(--dark-color);
 }
 .form-wrapper input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.2);
 }
 .form-wrapper .btn-submit {
     width: 100%;
@@ -142,11 +172,11 @@ footer {
     cursor: pointer;
     font-size: 1rem;
     background-color: var(--primary-color);
-    color: var(--white-color);
+    color: #fff;
     transition: all 0.3s ease;
 }
 .form-wrapper .btn-submit:hover {
-    background-color: #4338ca;
+    background-color: #5b21b6;
     transform: translateY(-2px);
 }
 .form-wrapper .form-link {
@@ -174,7 +204,10 @@ footer {
 /* --- Dashboard --- */
 .dashboard-header {
   margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
 }
+
 .lesson-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -185,14 +218,16 @@ footer {
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   padding: 1.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s, background-color 0.3s;
 }
 .lesson-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  border-color: var(--primary-color);
 }
 .lesson-card h3 {
   margin-top: 0;
@@ -207,14 +242,17 @@ footer {
   text-align: center;
   display: inline-block;
   margin-bottom: 1rem;
+  border: 1px solid transparent;
 }
 .status.completado {
-  color: #065f46;
-  background: #d1fae5;
+  color: var(--success-color);
+  background: #ecfdf5;
+  border-color: #a7f3d0;
 }
 .status.no_iniciado {
   color: #374151;
   background: #f3f4f6;
+  border-color: #e2e8f0;
 }
 .lesson-card .btn-lesson {
   display: block;
@@ -223,15 +261,15 @@ footer {
   text-align: center;
   padding: 0.75rem;
   background: var(--primary-color);
-  color: var(--white-color);
+  color: #fff; /* Siempre blanco para mejor contraste */
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 .lesson-card .btn-lesson:hover {
-  background: #4338ca;
-  text-decoration: none;
+  background: #5b21b6;
+  transform: translateY(-2px);
 }
 .lesson-card .btn-repasar {
     background: var(--success-color);
@@ -250,9 +288,11 @@ footer {
 .activity-wizard {
     background: var(--white-color);
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
     margin-top: 2rem;
     overflow: hidden;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 .activity-step {
     display: none;
@@ -260,6 +300,7 @@ footer {
 }
 .activity-step.active {
     display: block;
+    animation: fadeIn 0.6s;
 }
 .activity-header {
     margin-bottom: 1.5rem;
@@ -283,11 +324,12 @@ footer {
     transition: width 0.5s ease-in-out;
 }
 .activity-instructions {
-    background: #eef2ff;
+    background: #f1f5f9;
     border-left: 4px solid var(--primary-color);
     padding: 1rem 1.5rem;
     border-radius: 8px;
     margin-bottom: 2rem;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 .activity-instructions p { margin: 0; }
 .sandbox {
@@ -310,11 +352,12 @@ footer {
     resize: vertical;
     background: #f9fafb;
     color: #111827;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 .sandbox textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.2);
 }
 .sandbox-preview-box {
     flex-grow: 1;
@@ -322,11 +365,12 @@ footer {
     border: 2px dashed var(--grey-color);
     border-radius: 8px;
     padding: 1.5rem;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 .activity-controls {
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--border-color);
     text-align: right;
 }
 .btn-action {
@@ -342,8 +386,8 @@ footer {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.btn-verify { background-color: var(--primary-color); color: var(--white-color); }
-.btn-next { background-color: var(--success-color); color: var(--white-color); display: none; }
+.btn-verify { background-color: var(--primary-color); color: #fff; }
+.btn-next { background-color: var(--success-color); color: #fff; display: none; }
 .feedback-message {
   margin-top: 1.5rem;
   padding: 1rem;
@@ -353,7 +397,6 @@ footer {
   display: none;
   animation: fadeIn 0.5s;
 }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 .feedback-message.success { background: #d1fae5; color: #065f46; display: block; }
 .feedback-message.error { background: #fee2e2; color: #991b1b; display: block; }
 .completion-form { text-align: center; }
@@ -361,4 +404,183 @@ footer {
     background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
     font-size: 1.2rem;
     padding: 1rem 3rem;
+    color: #fff;
+}
+
+/* ============================================
+--- ESTILOS VERSIÓN 2.0+ --- 
+============================================
+*/
+
+/* --- Modo Oscuro --- */
+html[data-theme="dark"] {
+  --primary-color: #8b5cf6;
+  --secondary-color: #ec4899;
+  --dark-color: #f9fafb;
+  --light-color: #111827;
+  --white-color: #1f2937;
+  --grey-color: #9ca3af;
+  --border-color: #374151;
+}
+html[data-theme="dark"] .navbar,
+html[data-theme="dark"] footer,
+html[data-theme="dark"] .form-wrapper,
+html[data-theme="dark"] .lesson-card,
+html[data-theme="dark"] .activity-wizard,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .leaderboard-table-wrapper {
+    border-color: var(--border-color);
+}
+html[data-theme="dark"] .activity-instructions {
+    background: #1f2937;
+    border-left-color: var(--primary-color);
+}
+html[data-theme="dark"] .sandbox-preview-box { background: #111827; }
+html[data-theme="dark"] .status.no_iniciado {
+    background: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+}
+html[data-theme="dark"] .form-message.success { background: #064e3b; color: #a7f3d0; }
+html[data-theme="dark"] .form-message.error { background: #991b1b; color: #fecaca; }
+html[data-theme="dark"] .flash-message.success {
+    background-color: #052e16;
+    color: #6ee7b7;
+    border-color: #064e3b;
+}
+
+/* --- Botón de Tema --- */
+#theme-toggle {
+    background: none; border: none; cursor: pointer; padding: 0.5rem; margin-left: 1rem; color: var(--grey-color); display: flex; align-items: center; justify-content: center;
+}
+#theme-toggle:hover { color: var(--primary-color); }
+.toggle-icon { width: 24px; height: 24px; }
+#theme-toggle-light-icon { display: none; }
+html[data-theme="dark"] #theme-toggle-dark-icon { display: none; }
+html[data-theme="dark"] #theme-toggle-light-icon { display: block; }
+
+/* --- Dashboard Mejorado --- */
+.user-stats { display: flex; gap: 1rem; margin-top: 1.5rem; }
+.stat-card { background: var(--white-color); padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); flex-grow: 1; text-align: center; transition: background-color 0.3s, border-color 0.3s; }
+.stat-label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--grey-color); }
+.stat-value { display: block; font-size: 2rem; font-weight: 700; color: var(--primary-color); }
+.day-header { margin-top: 3rem; margin-bottom: 1.5rem; font-size: 1.8rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+.lesson-order { font-size: 0.8rem; font-weight: 700; color: var(--secondary-color); display: block; margin-bottom: 0.5rem; }
+.lesson-card.locked { opacity: 0.6; }
+.btn-locked { background-color: var(--grey-color); cursor: not-allowed; }
+.btn-locked:hover { background-color: var(--grey-color); transform: none; }
+
+/* --- Tabla de Clasificación --- */
+.leaderboard-header { text-align: center; margin-bottom: 3rem; }
+.leaderboard-header h2 { font-size: 2.5rem; }
+.leaderboard-table-wrapper { background: var(--white-color); border-radius: 12px; padding: 1rem; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: background-color 0.3s, border-color 0.3s; }
+.leaderboard-table { width: 100%; border-collapse: collapse; }
+.leaderboard-table th, .leaderboard-table td { padding: 1rem; text-align: left; }
+.leaderboard-table thead { border-bottom: 2px solid var(--border-color); }
+.leaderboard-table th { font-size: 0.9rem; text-transform: uppercase; color: var(--grey-color); }
+.leaderboard-table tbody tr:not(:last-child) { border-bottom: 1px solid var(--border-color); }
+.leaderboard-table .user-info { display: flex; align-items: center; gap: 1rem; }
+.leaderboard-table .user-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.leaderboard-table .current-user { background-color: #f0e6ff; font-weight: 700; }
+html[data-theme="dark"] .leaderboard-table .current-user { background-color: #2c1c42; }
+.leaderboard-table td:first-child { font-weight: 700; font-size: 1.2rem; }
+
+/* --- Contenedor de Video --- */
+.video-container { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); }
+.video-container h3 { margin-bottom: 1rem; }
+.video-container iframe { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; border: 1px solid var(--border-color); }
+
+/* --- Estilos para Perfil --- */
+.profile-form-wrapper input:disabled {
+    background-color: #e5e7eb;
+    cursor: not-allowed;
+}
+html[data-theme="dark"] .profile-form-wrapper input:disabled {
+    background-color: #374151;
+}
+.avatar-upload-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid var(--white-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+.input-file {
+    display: none;
+}
+.btn-file {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background-color: var(--grey-color);
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+.btn-file:hover {
+    background-color: var(--primary-color);
+}
+
+/* --- Estilos para Menú de Usuario --- */
+.user-menu {
+    position: relative;
+    margin-left: 1.5rem;
+}
+.user-menu-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+}
+.navbar-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+}
+.user-menu-dropdown {
+    display: none; /* Oculto por defecto */
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.75rem;
+    background-color: var(--white-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    min-width: 160px;
+    z-index: 1100;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+/* Clase 'active' que se añade con JS para mostrar el menú */
+.user-menu-dropdown.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+.user-menu-dropdown a {
+    display: block;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    white-space: nowrap;
+    color: var(--dark-color);
+    text-align: center; /* <-- ¡AQUÍ ESTÁ LA CORRECCIÓN! */
+}
+.user-menu-dropdown a:hover {
+    background-color: var(--light-color);
+    color: var(--primary-color);
 }
