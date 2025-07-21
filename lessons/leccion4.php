@@ -44,8 +44,8 @@ $exercises = [
         'title' => 'Planificación del Proyecto',
         'objective' => 'Elige tu idea de proyecto y crea el archivo HTML con la estructura básica de todas las secciones que tendrá (ej. Inicio, Sobre Mí, Galería, Contacto). Extra: Define la paleta de colores y las fuentes que usarás en un comentario en tu CSS.',
         'theory' => 'Todo gran proyecto empieza con un plan. Antes de escribir una línea de código, piensa: ¿qué quiero construir? Un portafolio, una página para un negocio ficticio, un sitio de fans... Dibuja un boceto simple en papel. Hoy, nos enfocaremos en crear el "esqueleto" de tu proyecto usando solo etiquetas HTML semánticas como `<header>`, `<main>`, `<section>` y `<footer>`.',
-        'example_code' => "<header><!-- Menú de navegación aquí --></header>\n<main>\n    <section id=\"inicio\"></section>\n    <section id=\"galeria\"></section>\n</main>\n<footer><!-- Información de copyright aquí --></footer>",
-        'starter_code' => "<!-- Crea aquí la estructura principal de tu proyecto final -->\n",
+        'example_code' => "<header></header>\n<main>\n    <section id=\"inicio\"></section>\n    <section id=\"galeria\"></section>\n</main>\n<footer></footer>",
+        'starter_code' => "\n",
         'validation' => "const main = preview.contentDocument.querySelector('main'); const section = preview.contentDocument.querySelector('section'); return main && section;"
     ],
     [
@@ -54,16 +54,16 @@ $exercises = [
         'objective' => 'Traduce tu boceto a HTML y CSS. Usa Flexbox para el layout principal y aplica la paleta de colores y fuentes que usarás. Extra: Crea al menos dos secciones de tu página (ej. \'Inicio\' y \'Sobre Mí\').',
         'theory' => 'Ahora, damos vida al esqueleto. Usando CSS, definiremos los estilos base: colores, tipografías y, lo más importante, la maquetación. Aplicaremos `display: flex` a los contenedores principales para organizar las secciones de nuestra página como lo planeamos en el boceto. Este es el momento de definir la "personalidad" visual de tu sitio.',
         'example_code' => "<style>\n    body { font-family: 'Arial'; background: #f0f0f0; }\n    .container { display: flex; justify-content: center; }\n</style>",
-        'starter_code' => "<!-- Continúa construyendo tu proyecto. ¡Añade CSS! -->\n<style>\n\n</style>\n",
+        'starter_code' => "\n<style>\n\n</style>\n",
         'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('display:flex');"
     ],
     [
         'day' => 18,
         'title' => 'Contenido e Interactividad',
-        'objective' => 'Rellena el sitio con el contenido real. Añade al menos una funcionalidad con JS, como un menú móvil que aparece y desaparece. Extra: Asegúrate de que tu funcionalidad JS esté bien comentada.',
+        'objective' => 'Rellena el sitio con el contenido real. Añade al menos una funcionalidad con JS, como un menú móvil que aparece y desaparece. Mini-Reto: Asegúrate de que tu funcionalidad JS esté bien comentada.',
         'theory' => 'Una página bonita necesita contenido. Es hora de añadir los textos finales, las imágenes de tu galería y toda la información. Además, le daremos inteligencia con JavaScript. Una buena primera interacción es un "menú hamburguesa" para móviles, o botones que muestren u oculten información. ¡Piensa en qué puede hacer tu página más útil o divertida para el usuario!',
         'example_code' => "<script>\n    const boton = document.getElementById('miBoton');\n    boton.addEventListener('click', () => {\n        alert('¡Funciona!');\n    });\n</script>",
-        'starter_code' => "<!-- Sigue con tu proyecto. ¡Añade contenido y JavaScript! -->\n",
+        'starter_code' => "\n",
         'validation' => "const script = preview.contentDocument.querySelector('script'); return script && script.textContent.trim() !== '';"
     ],
     [
@@ -72,7 +72,7 @@ $exercises = [
         'objective' => 'Arregla cualquier error de diseño o de código. Añade pequeños detalles como sombras a las cajas (`box-shadow`) o transiciones suaves a los botones (`transition`). Extra: Usa el inspector del navegador para ver cómo se ve tu página en un tamaño de celular.',
         'theory' => 'Los detalles marcan la diferencia. Esta fase se llama "pulido". Revisa tu sitio en busca de errores, pide a un amigo que lo pruebe. Añade pequeños toques de calidad: una sombra sutil con `box-shadow` puede hacer que una tarjeta resalte; una `transition` en un botón hace que el cambio de color al pasar el ratón sea suave y elegante.',
         'example_code' => "<style>\n    .boton:hover {\n        background-color: blue;\n        transition: background-color 0.3s ease;\n    }\n</style>",
-        'starter_code' => "<!-- ¡Últimos retoques a tu proyecto! -->\n",
+        'starter_code' => "\n",
         'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('transition') || css.includes('box-shadow');"
     ],
     [
@@ -80,7 +80,7 @@ $exercises = [
         'title' => '¡Día de Demo!',
         'objective' => '¡Lo lograste! Has completado el bootcamp. Este último paso es para celebrar tu increíble trabajo. ¡Presiona el botón para finalizar!',
         'theory' => '¡Felicidades, desarrollador! Has completado un viaje increíble desde los fundamentos de HTML hasta crear un proyecto completo y funcional. Este es el resultado de tu esfuerzo y dedicación. Siéntete orgulloso de lo que has construido. Este es solo el comienzo de tu aventura en el desarrollo web. ¡Sigue aprendiendo, sigue construyendo y nunca dejes de ser curioso!',
-        'example_code' => "<!-- ¡No hay código para hoy, solo celebración! -->",
+        'example_code' => "",
         'starter_code' => "<h1>¡MI PROYECTO ESTÁ TERMINADO!</h1>\n<p>¡Gracias por este increíble bootcamp!</p>",
         'validation' => "return true;"
     ]
@@ -111,7 +111,6 @@ $exercises = [
     </style>
 </head>
 <body class="bg-gray-900 text-white overflow-hidden">
-    <!-- Fase 1: Vista de Teoría -->
     <div id="concept-view" class="h-screen flex flex-col items-center justify-center p-6 sm:p-8">
         <div class="w-full max-w-4xl text-left bg-gray-800/50 p-8 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700">
             <div class="prose prose-invert max-w-none">
@@ -131,7 +130,6 @@ $exercises = [
         </div>
     </div>
 
-    <!-- Fase 2: Vista de Laboratorio -->
     <div id="lab-view" class="hidden h-screen flex flex-col md:flex-row">
         <aside class="w-full md:w-1/3 xl:w-1/4 p-6 bg-gray-800 overflow-y-auto flex flex-col">
             <div>
@@ -309,11 +307,38 @@ $exercises = [
         resetStepBtn.addEventListener('click', () => loadStep(currentStep));
         editor.addEventListener('input', updatePreview);
         
+        const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+        editor.addEventListener('input', (e) => {
+            updatePreview();
+            
+            if (e.inputType === 'insertText' && e.data === '>') {
+                const cursorPosition = editor.selectionStart;
+                const textBeforeCursor = editor.value.substring(0, cursorPosition);
+                const lastOpeningBracket = textBeforeCursor.lastIndexOf('<');
+                
+                if (lastOpeningBracket !== -1 && textBeforeCursor[lastOpeningBracket + 1] !== '/') {
+                    const tagContent = textBeforeCursor.substring(lastOpeningBracket + 1, cursorPosition - 1);
+                    const tagName = tagContent.split(' ')[0].replace(/>$/, '');
+
+                    if (tagName && !selfClosingTags.includes(tagName)) {
+                        const closingTag = `</${tagName}>`;
+                        const textAfterCursor = editor.value.substring(cursorPosition);
+                        editor.value = textBeforeCursor + closingTag + textAfterCursor;
+                        editor.selectionStart = cursorPosition;
+                        editor.selectionEnd = cursorPosition;
+                        updatePreview();
+                    }
+                }
+            }
+        });
+        
         editor.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
                 e.preventDefault();
                 const start = editor.selectionStart;
-                editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(start);
+                const end = editor.selectionEnd;
+                editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
                 editor.selectionStart = editor.selectionEnd = start + 4;
             }
         });

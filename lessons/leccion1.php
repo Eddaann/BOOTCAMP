@@ -199,7 +199,6 @@ $exercises = [
         const exercises = <?php echo json_encode($exercises); ?>;
         const isCompleted = <?php echo json_encode($is_completed); ?>;
         const completedStepsCount = <?php echo $completed_steps_count; ?>;
-
         const conceptView = document.getElementById('concept-view');
         const labView = document.getElementById('lab-view');
         const conceptTitle = document.getElementById('concept-title');
@@ -296,15 +295,14 @@ $exercises = [
             }
             try {
                 // --- CORRECCIÓN DEFINITIVA ---
-                // La función de validación ahora se crea sin el `return` extra, lo que evita el error.
-                const validationFn = new Function('preview', exercises[currentStep].validation);
+                const validationFn = new Function('preview', `return (() => { ${exercises[currentStep].validation} })()`);
                 const isCorrect = validationFn(preview);
                 
                 if (isCorrect) {
                     showFeedback('¡Correcto! Pasando al siguiente nivel.', true);
                     if (!completedSteps[currentStep]) {
                         completedSteps[currentStep] = true;
-                        saveProgressToServer(); // Guardar progreso
+                        saveProgressToServer();
                     }
                     updateProgress();
                     setTimeout(() => {
@@ -327,13 +325,39 @@ $exercises = [
         startLabBtn.addEventListener('click', showLab);
         backToTheoryBtn.addEventListener('click', () => showConcept(currentStep));
         resetStepBtn.addEventListener('click', () => loadStep(currentStep));
-        editor.addEventListener('input', updatePreview);
+        
+        const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+        editor.addEventListener('input', (e) => {
+            updatePreview();
+            
+            if (e.inputType === 'insertText' && e.data === '>') {
+                const cursorPosition = editor.selectionStart;
+                const textBeforeCursor = editor.value.substring(0, cursorPosition);
+                const lastOpeningBracket = textBeforeCursor.lastIndexOf('<');
+                
+                if (lastOpeningBracket !== -1 && textBeforeCursor[lastOpeningBracket + 1] !== '/') {
+                    const tagContent = textBeforeCursor.substring(lastOpeningBracket + 1, cursorPosition - 1);
+                    const tagName = tagContent.split(' ')[0].replace(/>$/, '');
+
+                    if (tagName && !selfClosingTags.includes(tagName)) {
+                        const closingTag = `</${tagName}>`;
+                        const textAfterCursor = editor.value.substring(cursorPosition);
+                        editor.value = textBeforeCursor + closingTag + textAfterCursor;
+                        editor.selectionStart = cursorPosition;
+                        editor.selectionEnd = cursorPosition;
+                        updatePreview();
+                    }
+                }
+            }
+        });
         
         editor.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
                 e.preventDefault();
                 const start = editor.selectionStart;
-                editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(start);
+                const end = editor.selectionEnd;
+                editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
                 editor.selectionStart = editor.selectionEnd = start + 4;
             }
         });
