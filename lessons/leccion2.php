@@ -1,125 +1,395 @@
-<?php 
-require_once __DIR__ . '/../includes/auth.php'; 
-$lesson_id = 2; 
+<?php
+require '../includes/auth.php';
+require '../includes/db.php';
+
+$lesson_id = 2;
+$user_id = $_SESSION['user_id'];
+
+// --- Lógica para registrar el inicio de la lección ---
+$sql_check_start = "SELECT id FROM user_lessons WHERE user_id = ? AND lesson_id = ?";
+$stmt_check_start = $conn->prepare($sql_check_start);
+$stmt_check_start->bind_param("ii", $user_id, $lesson_id);
+$stmt_check_start->execute();
+$result_start = $stmt_check_start->get_result();
+if ($result_start->num_rows == 0) {
+    $sql_start_lesson = "INSERT INTO user_lessons (user_id, lesson_id, started_at) VALUES (?, ?, NOW())";
+    $stmt_start = $conn->prepare($sql_start_lesson);
+    $stmt_start->bind_param("ii", $user_id, $lesson_id);
+    $stmt_start->execute();
+    $stmt_start->close();
+}
+$stmt_check_start->close();
+
+// --- Lógica para verificar si la lección ya está completada Y OBTENER PROGRESO ---
+$is_completed = false;
+$completed_steps_count = 0;
+$sql_check = "SELECT points_awarded, completed_steps FROM user_lessons WHERE user_id = ? AND lesson_id = ?";
+$stmt_check = $conn->prepare($sql_check);
+$stmt_check->bind_param("ii", $user_id, $lesson_id);
+$stmt_check->execute();
+$result_check = $stmt_check->get_result();
+if ($result_check->num_rows > 0) {
+    $row = $result_check->fetch_assoc();
+    $completed_steps_count = $row['completed_steps'];
+    if ($row['points_awarded'] !== null) {
+        $is_completed = true;
+    }
+}
+$stmt_check->close();
+
+// --- Definición de los Ejercicios y Teoría de la Semana 2 ---
+$exercises = [
+    [
+        'day' => 6,
+        'title' => 'Introducción a CSS',
+        'objective' => 'Cambia el color de fondo, el color del texto de los encabezados y la fuente de los párrafos. Mini-Reto: Crea una clase `.destacado` y aplícala a un párrafo para que tenga un color de fondo diferente.',
+        'theory' => 'CSS (Cascading Style Sheets) es el lenguaje que usamos para diseñar nuestras páginas web. Funciona con "selectores" para apuntar a elementos HTML (por etiqueta `h1`, por clase `.mi-clase`, o por ID `#mi-id`) y "propiedades" para cambiar su apariencia (como `color`, `background-color`, `font-family`).',
+        'example_code' => "<style>
+    body {
+        background-color: navy;
+    }
+    .titulo-principal {
+        color: white;
+    }
+</style>",
+        'starter_code' => "<!-- Pega aquí tu código del proyecto de la Semana 1 -->
+<style>
+    /* Escribe tus estilos aquí */
+
+</style>",
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('body') && css.includes('background-color') && (css.includes('h1') || css.includes('h2')) && css.includes('color') && css.includes('p') && css.includes('font-family') && css.includes('.destacado');"
+    ],
+    [
+        'day' => 7,
+        'title' => 'El Modelo de Caja',
+        'objective' => 'Crea 3 <div>. Usa `margin` para separarlos, `padding` para darles espacio interno y `border`. Mini-Reto: Experimenta con bordes punteados (`dotted`) y redondeados (`border-radius`).',
+        'theory' => 'En CSS, cada elemento es una caja rectangular. El "Modelo de Caja" describe cómo se compone esta caja: el contenido, el `padding` (espacio interior), el `border` (borde) y el `margin` (espacio exterior). Dominar estas cuatro propiedades es fundamental para controlar el espaciado y el tamaño de los elementos.',
+        'example_code' => "<style>
+    .caja {
+        width: 100px;
+        padding: 20px;
+        border: 2px solid red;
+        border-radius: 10px; /* Borde redondeado */
+        margin: 10px;
+    }
+</style>",
+        'starter_code' => "<style>
+    .tarjeta {
+        
+    }
+</style>
+
+<div class=\"tarjeta\">Tarjeta 1</div>
+<div class=\"tarjeta\">Tarjeta 2</div>
+<div class=\"tarjeta\">Tarjeta 3</div>",
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('.tarjeta') && css.includes('margin') && css.includes('padding') && css.includes('border') && css.includes('border-radius');"
+    ],
+    [
+        'day' => 8,
+        'title' => 'Layout con Flexbox (Parte 1)',
+        'objective' => 'Crea una barra de navegación. Usa `display: flex` en el `<nav>` y `justify-content` para distribuir los enlaces. Mini-Reto: Cambia el valor de `justify-content` a `space-between` y `center` para ver las diferencias.',
+        'theory' => 'Flexbox es un modelo de diseño moderno para alinear y distribuir elementos en un contenedor. Al aplicar `display: flex` a un contenedor, sus hijos se convierten en "flex items". La propiedad `justify-content` controla la alineación horizontal (ej: `space-around`, `center`) y `align-items` controla la vertical.',
+        'example_code' => "<style>
+    .container {
+        display: flex;
+        justify-content: space-between; /* o center, flex-start, etc. */
+        align-items: center;
+    }
+</style>",
+        'starter_code' => "<style>
+    nav {
+        background-color: #333;
+        padding: 1rem;
+    }
+    a {
+        color: white;
+    }
+</style>
+<nav>
+    <a href=\"#\">Inicio</a>
+    <a href=\"#\">Servicios</a>
+    <a href=\"#\">Galería</a>
+    <a href=\"#\">Contacto</a>
+</nav>",
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('nav') && css.includes('display:flex') && css.includes('justify-content');"
+    ],
+    [
+        'day' => 9,
+        'title' => 'Layout con Flexbox (Parte 2)',
+        'objective' => 'Crea una sección con 6 "tarjetas" de Pokémon. Usa Flexbox con `flex-wrap: wrap` para que las tarjetas se acomoden en varias filas. Mini-Reto: Usa `flex-direction: column` para ver cómo se apilan verticalmente.',
+        'theory' => 'Flexbox es muy potente. `flex-direction` nos permite cambiar el eje principal (a `column` por ejemplo). Cuando los elementos no caben en una sola línea, `flex-wrap: wrap` les permite pasar a la línea siguiente, creando un diseño adaptable o "responsive" de forma muy sencilla.',
+        'example_code' => "<style>
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .item {
+        width: 100px; /* Ancho de cada item */
+    }
+</style>",
+        'starter_code' => "<style>
+    .equipo-pokemon {
+        
+    }
+    .pokemon-card {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin: 0.5rem;
+        width: 120px;
+    }
+</style>
+<div class=\"equipo-pokemon\">
+    <div class=\"pokemon-card\">Pikachu</div>
+    <div class=\"pokemon-card\">Charmander</div>
+    <div class=\"pokemon-card\">Squirtle</div>
+    <div class=\"pokemon-card\">Bulbasaur</div>
+    <div class=\"pokemon-card\">Jigglypuff</div>
+    <div class=\"pokemon-card\">Snorlax</div>
+</div>",
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('display:flex') && css.includes('flex-wrap:wrap');"
+    ],
+    [
+        'day' => 10,
+        'title' => 'Proyecto Semanal 2',
+        'objective' => 'Diseña una réplica visual de un perfil de Instagram (foto, nombre, bio, cuadrícula de imágenes). Mini-Reto: Añade debajo de la biografía los "Highlights" (círculos con texto) usando Flexbox.',
+        'theory' => '¡Es hora de aplicar tus habilidades de diseño! Este proyecto consiste en replicar una interfaz conocida. Presta atención a los detalles: espaciado, alineación y estructura. Usa `div` para crear las secciones principales (cabecera, galería) y aplica Flexbox para posicionar todo correctamente. ¡El reto es que se parezca lo más posible al original!',
+        'example_code' => "<!-- Tu misión es recrear la estructura y estilo de un perfil de Instagram usando HTML y CSS con Flexbox. -->",
+        'starter_code' => "<!-- Construye tu clon de perfil de Instagram aquí -->",
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('display:flex');"
+    ]
+];
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Día 1: Módulo 2 - Dando Estilo con CSS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/styles.css" />
-  <style id="dynamic-styles"></style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 2: Dando Estilo con CSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        #editor { font-family: 'Fira Code', 'Courier New', Courier, monospace; tab-size: 4; font-size: 16px; line-height: 1.5; }
+        .step.active { border-color: #818cf8; transform: scale(1.02); }
+        .step.completed { border-color: #22c55e; background-color: #16a34a20; }
+        .prose h1 { color: #818cf8; }
+        .prose h2 { color: white; }
+        .prose p, .prose li { color: #d1d5db; }
+        .prose code { background-color: #374151; color: #f3f4f6; padding: 0.2em 0.4em; border-radius: 0.25rem; }
+    </style>
 </head>
-<body>
-  <?php include __DIR__ . '/../includes/lesson_header.php'; ?>
-  <main>
-    <div class="container">
-       <div class="lesson-container">
-            <h2>Módulo 2: Dando Estilo con CSS 🎨</h2>
-            <div class="activity-instructions">
-                <h3>Teoría y Conceptos Clave</h3>
-                <p><strong>Instructora:</strong>Fernando Mojica</p>
-                <p>¡Hola, equipo! Ahora que ya tenemos el esqueleto de nuestra página, vamos a vestirlo. Para eso usamos CSS (Cascading Style Sheets). CSS nos permite aplicar estilos como colores, fuentes y espaciados.</p>
-                <p>La magia de CSS reside en los <strong>selectores</strong>. Un selector es una regla que le dice al navegador a qué elemento HTML queremos aplicarle un estilo. Hoy aprenderemos los tres selectores básicos: por <strong>etiqueta</strong> (para afectar a todas las etiquetas de un tipo, como todos los `h1`), por <strong>clase</strong> (para afectar a todos los elementos que compartan una clase, como `.noticia-destacada`) y por <strong>ID</strong> (para afectar a un único elemento específico, como `#menu-principal`).</p>
-            </div>
-        </div>
-        <div class="lesson-container" style="margin-top: 2rem;"><h3>Parte Práctica: ¡A pintar se ha dicho!</h3></div>
-        <div class="activity-wizard">
-            <div class="html-base" style="display:none;">
-                <h1>Mi Página con Estilo</h1>
-                <p class="intro">Este es un párrafo para practicar CSS.</p>
-                <div id="caja-especial">Una caja con ID.</div>
-            </div>
-            <div class="activity-step active" data-step="1">
-              <div class="activity-header"><h3>Actividad 1/10: Coloreando el Título</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>Usa un <strong>selector de etiqueta</strong> para que el título <code>h1</code> sea de color <code>purple</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-1">Editor CSS</label><textarea id="code-1"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-1"></div></div></div>
-              <div class="feedback-message" id="feedback-1"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(1, 'h1', 'color', 'purple')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(1)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="2">
-              <div class="activity-header"><h3>Actividad 2/10: Selector de Clase</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>Usa un <strong>selector de clase</strong> para que el párrafo <code>.intro</code> tenga un tamaño de fuente (<code>font-size</code>) de <code>20px</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-2">Editor CSS</label><textarea id="code-2"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-2"></div></div></div>
-              <div class="feedback-message" id="feedback-2"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(2, '.intro', 'font-size', '20px')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(2)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="3">
-                <div class="activity-header"><h3>Actividad 3/10: Selector de ID</h3><div class="progress-bar"><div class="progress"></div></div></div>
-                <div class="activity-instructions"><p>Usa un <strong>selector de ID</strong> para que la caja <code>#caja-especial</code> tenga un fondo (<code>background-color</code>) <code>lightblue</code>.</p></div>
-                <div class="sandbox"><div class="sandbox-editor"><label for="code-3">Editor CSS</label><textarea id="code-3"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-3"></div></div></div>
-                <div class="feedback-message" id="feedback-3"></div>
-                <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(3, '#caja-especial', 'background-color', 'lightblue')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(3)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="4">
-              <div class="activity-header"><h3>Actividad 4/10: Añadiendo Relleno (Padding)</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>El padding añade espacio *dentro* de un elemento. Aplica un <code>padding</code> de <code>15px</code> a la caja <code>#caja-especial</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-4">Editor CSS</label><textarea id="code-4"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-4"></div></div></div>
-              <div class="feedback-message" id="feedback-4"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(4, '#caja-especial', 'padding', '15px')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(4)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="5">
-              <div class="activity-header"><h3>Actividad 5/10: Añadiendo Margen (Margin)</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>El margen añade espacio *fuera* de un elemento. Aplica un <code>margin-top</code> de <code>20px</code> al párrafo <code>.intro</code> para separarlo del título.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-5">Editor CSS</label><textarea id="code-5"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-5"></div></div></div>
-              <div class="feedback-message" id="feedback-5"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(5, '.intro', 'margin-top', '20px')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(5)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="6">
-              <div class="activity-header"><h3>Actividad 6/10: Creando Bordes</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>Vamos a añadir un borde al título <code>h1</code>. Usa <code>border</code> con el valor <code>2px solid purple</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-6">Editor CSS</label><textarea id="code-6"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-6"></div></div></div>
-              <div class="feedback-message" id="feedback-6"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(6, 'h1', 'border', '2px solid purple')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(6)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="7">
-              <div class="activity-header"><h3>Actividad 7/10: Esquinas Redondeadas</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>Suaviza las esquinas de la caja <code>#caja-especial</code>. Usa <code>border-radius</code> con un valor de <code>10px</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-7">Editor CSS</label><textarea id="code-7"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-7"></div></div></div>
-              <div class="feedback-message" id="feedback-7"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(7, '#caja-especial', 'border-radius', '10px')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(7)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="8">
-              <div class="activity-header"><h3>Actividad 8/10: Cambiando la Fuente</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>Cambia la fuente de toda la página. Crea un selector para <code>body</code> y aplica la propiedad <code>font-family</code> con el valor <code>sans-serif</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-8">Editor CSS</label><textarea id="code-8"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-8"></div></div></div>
-              <div class="feedback-message" id="feedback-8"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(8, 'p', 'font-family', 'sans-serif')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(8)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="9">
-              <div class="activity-header"><h3>Actividad 9/10: Alineando Texto</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>Centra el texto del título <code>h1</code>. Usa la propiedad <code>text-align</code> con el valor <code>center</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-9">Editor CSS</label><textarea id="code-9"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-9"></div></div></div>
-              <div class="feedback-message" id="feedback-9"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCss(9, 'h1', 'text-align', 'center')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(9)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="10">
-              <div class="activity-header"><h3>Actividad 10/10: Comentarios en CSS</h3><div class="progress-bar"><div class="progress"></div></div></div>
-              <div class="activity-instructions"><p>Añade un comentario en tu CSS que diga <code>/* Mis primeros estilos */</code>. Los comentarios en CSS empiezan con <code>/*</code> y terminan con <code>*/</code>.</p></div>
-              <div class="sandbox"><div class="sandbox-editor"><label for="code-10">Editor CSS</label><textarea id="code-10"></textarea></div><div class="sandbox-preview"><label>Vista Previa</label><div class="sandbox-preview-box" id="preview-10"></div></div></div>
-              <div class="feedback-message" id="feedback-10"></div>
-              <div class="activity-controls"><button class="btn-action btn-verify" onclick="checkCssComment(10, '/* Mis primeros estilos */')">Verificar</button><button class="btn-action btn-next" onclick="nextStep(10)">Siguiente →</button></div>
-            </div>
-            <div class="activity-step" data-step="11">
-                <div class="activity-header"><h3>Desafío Práctico (Opcional)</h3></div>
-                <div class="activity-instructions">
-                    <h4>Dale Estilo a tu Página de Biografía</h4>
-                    <p>Es hora de aplicar tus nuevas habilidades de CSS al proyecto que iniciaste en el módulo anterior.</p>
-                    <ol><li>Crea un nuevo archivo en la misma carpeta que tu <code>mi_biografia.html</code> y llámalo <code>estilos.css</code>.</li><li>Enlaza tu archivo CSS a tu HTML usando la etiqueta <code>&lt;link&gt;</code> en el <code>&lt;head&gt;</code>.</li><li>En tu archivo <code>estilos.css</code>, añade reglas para:<ul><li>Cambiar el color de fondo del <code>&lt;body&gt;</code>.</li><li>Elegir una fuente diferente para toda la página (puedes buscar en Google Fonts).</li><li>Ponerle un color llamativo y centrar tu título principal (<code>&lt;h1&gt;</code>).</li><li>Añadir un borde y esquinas redondeadas a tu imagen.</li><li>Darle un color de fondo diferente a las secciones usando clases (<code>class</code>).</li></ul></li><li>¡Experimenta! Juega con los colores y espaciados hasta que estés orgulloso del resultado.</li></ol>
+<body class="bg-gray-900 text-white overflow-hidden">
+    <!-- Fase 1: Vista de Teoría -->
+    <div id="concept-view" class="h-screen flex flex-col items-center justify-center p-6 sm:p-8">
+        <div class="w-full max-w-4xl text-left bg-gray-800/50 p-8 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700">
+            <div class="prose prose-invert max-w-none">
+                <div class="flex justify-between items-start">
+                    <h1 id="concept-title" class="text-4xl md:text-5xl font-bold mt-0 mb-4"></h1>
+                    <a href="../dashboard.php" class="text-sm text-indigo-400 hover:text-indigo-300 transition-colors no-underline whitespace-nowrap"><i class="fas fa-times-circle mr-1"></i> Salir</a>
                 </div>
-                <div class="activity-controls"><button class="btn-action btn-next" onclick="nextStep(11)">¡Listo para terminar! →</button></div>
+                <p id="concept-theory" class="text-lg md:text-xl leading-relaxed mb-6"></p>
+                <h2>Ejemplo de Código:</h2>
+                <pre><code id="concept-example" class="language-html rounded-lg text-base"></code></pre>
             </div>
-            <div class="activity-step" data-step="12">
-                 <div class="activity-header"><h3>¡Módulo 2 Completado! ✅</h3></div>
-                 <div class="activity-instructions completion-form">
-                    <p>¡Fantástico! Ya sabes cómo darle vida a tus páginas. Has completado el Día 1 con éxito. ¡Mañana te esperan desafíos aún más grandes!</p>
-                    <form action="../complete_lesson.php" method="POST" style="display: inline;"><input type="hidden" name="lesson_id" value="<?= $lesson_id ?>"><button type="submit" class="btn-action btn-verify">Marcar Módulo 2 como Completado</button></form>
-                 </div>
+            <div class="mt-8 text-center">
+                <button id="start-lab-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-lg transition-transform hover:scale-105 text-xl shadow-lg shadow-indigo-500/20">
+                    <i class="fas fa-vial mr-2"></i>¡Entendido, al Laboratorio!
+                </button>
             </div>
         </div>
     </div>
-  </main>
-  <script src="../assets/js/lesson-script.js"></script>
+
+    <!-- Fase 2: Vista de Laboratorio -->
+    <div id="lab-view" class="hidden h-screen flex flex-col md:flex-row">
+        <aside class="w-full md:w-1/3 xl:w-1/4 p-6 bg-gray-800 overflow-y-auto flex flex-col">
+            <div>
+                <button id="back-to-theory-btn" class="text-indigo-400 hover:text-indigo-300 mb-4 block transition-colors"><i class="fas fa-arrow-left mr-2"></i>Volver a la Teoría</button>
+                <h1 class="text-2xl font-bold text-indigo-400">Semana 2: Laboratorio</h1>
+                <div class="w-full bg-gray-700 rounded-full h-2.5 my-4">
+                    <div id="progress-bar" class="bg-indigo-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <div id="mission-container" class="mb-4 p-4 bg-indigo-900/50 rounded-lg border border-indigo-500/50 shadow-inner">
+                <h2 class="font-bold text-lg text-indigo-300 mb-2 flex items-center"><i class="fas fa-bullseye mr-3"></i>Tu Misión Actual</h2>
+                <p id="mission-objective" class="text-gray-200 text-sm font-medium leading-relaxed"></p>
+            </div>
+            <div id="steps-container" class="space-y-3 flex-grow"></div>
+            <div class="mt-auto pt-4">
+                <div id="feedback-container" class="h-12 mb-2"></div>
+                <button id="check-code-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-check mr-2"></i>Comprobar Código
+                </button>
+                <form id="complete-form" action="../complete_lesson.php" method="POST" class="hidden">
+                    <input type="hidden" name="lesson_id" value="<?php echo $lesson_id; ?>">
+                </form>
+            </div>
+        </aside>
+        <main class="w-full md:w-2/3 xl:w-3/4 flex flex-col">
+            <div class="h-1/2 flex flex-col bg-gray-900 border-b-4 border-gray-700">
+                <div class="flex-shrink-0 bg-gray-900 p-2 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold"><i class="fas fa-code mr-2 text-gray-400"></i>Editor</h3>
+                    <button id="reset-step-btn" class="text-xs text-gray-400 hover:text-white transition-colors"><i class="fas fa-redo mr-1"></i>Reiniciar Ejercicio</button>
+                </div>
+                <div class="flex-grow relative">
+                    <textarea id="editor" class="w-full h-full p-4 bg-[#1e1e1e] text-white resize-none border-none outline-none" spellcheck="false"></textarea>
+                </div>
+            </div>
+            <div class="h-1/2 flex flex-col bg-white">
+                <div class="flex-shrink-0 bg-gray-200 p-2"><h3 class="text-lg font-semibold text-gray-800"><i class="fas fa-rocket mr-2 text-gray-600"></i>Vista Previa</h3></div>
+                <div class="flex-grow"><iframe id="preview" class="w-full h-full border-none"></iframe></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        const exercises = <?php echo json_encode($exercises); ?>;
+        const isCompleted = <?php echo json_encode($is_completed); ?>;
+        const completedStepsCount = <?php echo $completed_steps_count; ?>;
+        const conceptView = document.getElementById('concept-view');
+        const labView = document.getElementById('lab-view');
+        const conceptTitle = document.getElementById('concept-title');
+        const conceptTheory = document.getElementById('concept-theory');
+        const conceptExample = document.getElementById('concept-example');
+        const startLabBtn = document.getElementById('start-lab-btn');
+        const backToTheoryBtn = document.getElementById('back-to-theory-btn');
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const stepsContainer = document.getElementById('steps-container');
+        const missionObjective = document.getElementById('mission-objective');
+        const checkCodeBtn = document.getElementById('check-code-btn');
+        const resetStepBtn = document.getElementById('reset-step-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const completeForm = document.getElementById('complete-form');
+
+        let completedSteps = new Array(exercises.length).fill(false).map((val, index) => index < completedStepsCount);
+        let currentStep = completedStepsCount < exercises.length ? completedStepsCount : exercises.length - 1;
+
+        async function saveProgressToServer() {
+            const completedCount = completedSteps.filter(Boolean).length;
+            try {
+                await fetch('../save_progress.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        lesson_id: <?php echo $lesson_id; ?>,
+                        completed_steps: completedCount
+                    })
+                });
+            } catch (error) {
+                console.error('Failed to save progress:', error);
+            }
+        }
+
+        function showConcept(stepIndex) {
+            conceptTitle.textContent = `Día ${exercises[stepIndex].day}: ${exercises[stepIndex].title}`;
+            conceptTheory.innerHTML = exercises[stepIndex].theory;
+            conceptExample.textContent = exercises[stepIndex].example_code;
+            hljs.highlightElement(conceptExample);
+            conceptView.classList.remove('hidden');
+            labView.classList.add('hidden');
+        }
+
+        function showLab() {
+            conceptView.classList.add('hidden');
+            labView.classList.remove('hidden');
+            labView.classList.add('flex');
+            loadStep(currentStep);
+        }
+
+        function renderSteps() {
+            stepsContainer.innerHTML = '';
+            exercises.forEach((exercise, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = `step p-3 border-2 border-gray-700 rounded-lg transition-all ${index === currentStep ? 'active' : ''} ${completedSteps[index] ? 'completed' : ''}`;
+                stepElement.innerHTML = `<div class="flex justify-between items-center"><h3 class="font-bold">Día ${exercise.day}: ${exercise.title}</h3><i class="fas ${completedSteps[index] ? 'fa-check-circle text-green-400' : 'fa-circle text-gray-600'}"></i></div>`;
+                stepsContainer.appendChild(stepElement);
+            });
+        }
+
+        function loadStep(stepIndex) {
+            currentStep = stepIndex;
+            editor.value = exercises[stepIndex].starter_code;
+            missionObjective.textContent = exercises[stepIndex].objective;
+            updatePreview();
+            renderSteps();
+            feedbackContainer.innerHTML = '';
+        }
+
+        function updatePreview() { preview.srcdoc = editor.value; }
+
+        function updateProgress() {
+            const completedCount = completedSteps.filter(Boolean).length;
+            const progress = (completedCount / exercises.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            if (completedCount === exercises.length) {
+                checkCodeBtn.innerHTML = isCompleted ? '<i class="fas fa-check-double mr-2"></i>Semana Completada' : '<i class="fas fa-trophy mr-2"></i>Finalizar Semana';
+                checkCodeBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                checkCodeBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                if (isCompleted) checkCodeBtn.disabled = true;
+            }
+        }
+
+        function showFeedback(message, isSuccess) {
+            feedbackContainer.innerHTML = `<div class="p-2 rounded-lg text-center font-semibold ${isSuccess ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}">${message}</div>`;
+        }
+        
+        checkCodeBtn.addEventListener('click', () => {
+            if (completedSteps.filter(Boolean).length === exercises.length) {
+                if (!isCompleted) completeForm.submit();
+                return;
+            }
+            try {
+                const validationFn = new Function('preview', `return ${exercises[currentStep].validation}`);
+                const isCorrect = validationFn(preview);
+                if (isCorrect) {
+                    showFeedback('¡Correcto! Pasando al siguiente nivel.', true);
+                    if (!completedSteps[currentStep]) {
+                        completedSteps[currentStep] = true;
+                        saveProgressToServer();
+                    }
+                    updateProgress();
+                    setTimeout(() => {
+                        if (currentStep < exercises.length - 1) {
+                            currentStep++;
+                            showConcept(currentStep);
+                        } else {
+                            showFeedback('¡Felicidades! Has completado todos los ejercicios.', true);
+                        }
+                    }, 1500);
+                } else {
+                    showFeedback('Aún no está bien. ¡Revisa el código y sigue intentando!', false);
+                }
+            } catch (e) {
+                showFeedback('Hubo un error en la vista previa. Revisa si hay etiquetas sin cerrar.', false);
+                console.error("Error de validación:", e);
+            }
+        });
+
+        startLabBtn.addEventListener('click', showLab);
+        backToTheoryBtn.addEventListener('click', () => showConcept(currentStep));
+        resetStepBtn.addEventListener('click', () => loadStep(currentStep));
+        editor.addEventListener('input', updatePreview);
+        
+        editor.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = editor.selectionStart;
+                editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(start);
+                editor.selectionStart = editor.selectionEnd = start + 4;
+            }
+        });
+
+        window.addEventListener('load', () => {
+            updateProgress();
+            showConcept(currentStep);
+        });
+    </script>
 </body>
 </html>

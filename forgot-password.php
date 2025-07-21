@@ -1,7 +1,8 @@
 <?php
-require_once 'includes/db.php';
+session_start();
+require 'includes/db.php';
 
-// Incluir las clases de PHPMailer
+// Importar PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -10,93 +11,143 @@ require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
 
 $message = '';
-$error = '';
+$message_type = ''; // 'success' or 'error'
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Por favor, ingresa un correo electrónico válido.";
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = 'Por favor, introduce un correo electrónico válido.';
+        $message_type = 'error';
     } else {
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE correo = ?");
-        $stmt->execute([$email]);
-        
-        if ($stmt->rowCount() > 0) {
-            // Generar un token seguro
-            $token = bin2hex(random_bytes(32));
-            $expires = new DateTime('now + 1 hour');
-            
-            // Guardar el token en la base de datos
-            $stmt_insert = $pdo->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)");
-            $stmt_insert->execute([$email, $token, $expires->format('Y-m-d H:i:s')]);
-            
-            // Construir el enlace de recuperación
-            $protocol = (!empty($_SERVER['HTTPS']) && 'off' !== strtolower($_SERVER['HTTPS']) ? 'https' : 'http');
-            $host = $_SERVER['HTTP_HOST'];
-            $script_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-            $reset_link = "{$protocol}://{$host}{$script_path}/reset-password.php?token={$token}";
+        $sql = "SELECT id FROM users WHERE email = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            // Configuración y envío del correo electrónico
+        if ($result->num_rows == 1) {
+            $user = $result->fetch_assoc();
+            $user_id = $user['id'];
+            
+            $token = bin2hex(random_bytes(50));
+            $expires = date("U") + 1800; // Token válido por 30 minutos
+
+            // Borrar tokens antiguos para este usuario
+            $sql = "DELETE FROM password_resets WHERE user_id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+
+            // Insertar nuevo token
+            $sql = "INSERT INTO password_resets (user_id, token, expires) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iss", $user_id, $token, $expires);
+            $stmt->execute();
+
+            // Enviar correo electrónico
             $mail = new PHPMailer(true);
-
             try {
-                // Configuración del servidor SMTP
+                // Configuración del servidor
                 $mail->isSMTP();
-                $mail->Host       = 'smtp.gmail.com';
+                $mail->Host       = 'smtp.example.com'; // Introduce tu host SMTP
                 $mail->SMTPAuth   = true;
-                
-                // --- ¡TUS CREDENCIALES YA ESTÁN CONFIGURADAS! ---
-                $mail->Username   = 'franciscotapia1020@gmail.com';
-                $mail->Password   = 'nwfqjvtrkuafigdq'; // ¡LISTO! Tu contraseña de aplicación está aquí.
-                
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                $mail->Port       = 465;
+                $mail->Username   = 'user@example.com'; // Tu usuario SMTP
+                $mail->Password   = 'secret';           // Tu contraseña SMTP
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port       = 587;
 
-                // Remitente y destinatario
-                $mail->setFrom('no-reply@bootcamp.com', 'Bootcamp Web');
+                // Destinatarios
+                $mail->setFrom('no-reply@codigobootcamp.com', 'Codigo Bootcamp');
                 $mail->addAddress($email);
 
-                // Contenido del correo
+                // Contenido
+                $url = "http://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/reset-password.php?token=" . $token;
                 $mail->isHTML(true);
-                $mail->CharSet = 'UTF-8';
-                $mail->Subject = 'Restablece tu contraseña de Bootcamp Web';
-                $mail->Body    = "Hola,<br><br>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:<br><br><a href='{$reset_link}'>Restablecer mi contraseña</a><br><br>Si no solicitaste esto, puedes ignorar este correo.<br><br>Saludos,<br>El equipo de Bootcamp Web";
-                $mail->AltBody = "Para restablecer tu contraseña, copia y pega este enlace en tu navegador: {$reset_link}";
+                $mail->Subject = 'Restablecimiento de Contraseña - Codigo Bootcamp';
+                $mail->Body    = 'Hola,<br><br>Has solicitado restablecer tu contraseña. Por favor, haz clic en el siguiente enlace para continuar:<br><br><a href="' . $url . '">' . $url . '</a><br><br>Si no solicitaste esto, puedes ignorar este correo.<br><br>Gracias,<br>El equipo de Codigo Bootcamp';
+                $mail->AltBody = 'Para restablecer tu contraseña, copia y pega esta URL en tu navegador: ' . $url;
 
                 $mail->send();
-                $message = 'Si una cuenta con ese correo electrónico existe, hemos enviado un enlace de recuperación.';
+                $message = 'Se ha enviado un enlace de recuperación a tu correo electrónico.';
+                $message_type = 'success';
             } catch (Exception $e) {
-                $error = "No se pudo enviar el correo. Revisa tus credenciales o contacta al administrador.";
-                error_log("PHPMailer Error: {$mail->ErrorInfo}");
+                $message = "El mensaje no pudo ser enviado. Mailer Error: {$mail->ErrorInfo}";
+                $message_type = 'error';
             }
         } else {
-            $message = 'Si una cuenta con ese correo electrónico existe, hemos enviado un enlace de recuperación.';
+            // Aún si el correo no existe, mostramos un mensaje genérico por seguridad
+            $message = 'Si tu correo está en nuestra base de datos, recibirás un enlace de recuperación.';
+            $message_type = 'success';
         }
+        $stmt->close();
+        $conn->close();
     }
 }
-
-$page_title = "Recuperar Contraseña";
-include 'includes/header.php';
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - Código Bootcamp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; }
+        .cta-button { transition: all 0.3s ease; }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+        .form-input { background-color: #1a1a1a; border-color: #333; }
+        .form-input:focus { background-color: #2a2a2a; border-color: #38bdf8; outline: none; box-shadow: none; }
+    </style>
+</head>
+<body class="text-white">
 
-<div class="page-container">
-    <div class="form-wrapper">
-        <h2>Recuperar Contraseña</h2>
-        <p style="text-align: center; margin-bottom: 1.5rem;">Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
-        
-        <?php if ($error): ?><p class="form-message error"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-        <?php if ($message): ?><p class="form-message success"><?= htmlspecialchars($message) ?></p><?php endif; ?>
-        
-        <form method="POST" action="forgot-password.php">
-            <div class="form-group">
-                <label for="email">Correo electrónico</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <button type="submit" class="btn-submit">Enviar Enlace</button>
-        </form>
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="index.php" class="text-2xl font-bold">
+            <span class="text-cyan-400">&lt;</span>Código<span class="text-cyan-400">/&gt;</span> Bootcamp
+        </a>
+        <nav class="flex space-x-6 items-center">
+            <a href="login.php" class="hover:text-cyan-400 transition-colors">Iniciar Sesión</a>
+        </nav>
+    </header>
 
-        <p class="form-link">¿Recordaste tu contraseña? <a href="login.php">Inicia sesión</a>.</p>
-    </div>
-</div>
+    <!-- Forgot Password Form Section -->
+    <main class="flex items-center justify-center min-h-[calc(100vh-160px)]">
+        <div class="bg-gray-900 p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-md mx-4">
+            <h2 class="text-3xl font-bold text-center mb-2">Recuperar Contraseña</h2>
+            <p class="text-center text-gray-400 mb-8">Introduce tu correo y te enviaremos un enlace para restablecerla.</p>
+            
+            <?php if (!empty($message)): ?>
+                <div class="<?php echo $message_type === 'success' ? 'bg-green-500/20 border-green-500 text-green-300' : 'bg-red-500/20 border-red-500 text-red-300'; ?> px-4 py-3 rounded-lg mb-6" role="alert">
+                    <p><?php echo $message; ?></p>
+                </div>
+            <?php endif; ?>
 
-<?php include 'includes/footer.php'; ?>
+            <form action="forgot-password.php" method="post" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Correo Electrónico</label>
+                    <input type="email" name="email" id="email" required
+                           class="w-full px-4 py-3 rounded-lg text-white form-input focus:ring-cyan-500 focus:border-cyan-500 transition">
+                </div>
+                <div>
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-4 rounded-lg cta-button text-lg">
+                        Enviar Enlace de Recuperación
+                    </button>
+                </div>
+            </form>
+            <p class="text-center text-gray-400 mt-8">
+                ¿Recordaste tu contraseña? <a href="login.php" class="font-medium text-cyan-400 hover:underline">Inicia sesión</a>.
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8">
+        <div class="container mx-auto px-6 text-center text-gray-500">
+            <p>&copy; 2025 Código Bootcamp. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
