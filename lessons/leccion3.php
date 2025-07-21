@@ -52,7 +52,7 @@ $exercises = [
         'day' => 12,
         'title' => 'Funciones y Eventos',
         'objective' => 'Crea un botón que al darle clic, cambie el texto de un párrafo. Mini-Reto: Crea un segundo botón que, al darle clic, revierta el texto del párrafo a su estado original.',
-        'theory' => 'Las funciones son bloques de código reutilizables. Las declaramos con `function miFuncion() { ... }`. Para interactuar con el HTML, usamos eventos. El más común es `onclick`. Primero, seleccionamos un elemento HTML con `document.getElementById(\"su-id\")`, y luego le decimos qué función ejecutar cuando ocurra un evento.',
+        'theory' => 'Las funciones son bloques de código reutilizables. Las declaramos con `function miFuncion() { ... }`. Para interactuar con el HTML, usamos eventos. El más común es `onclick`. Primero, seleccionamos un elemento HTML con `document.getElementById("su-id")`, y luego le decimos qué función ejecutar cuando ocurra un evento.',
         'example_code' => "const miElemento = document.getElementById(\"titulo\");\n\nfunction cambiarColor() {\n    miElemento.style.color = \"red\";\n}",
         'starter_code' => "<p id=\"mensaje\">Hola</p>\n<button onclick=\"cambiarTexto()\">Haz Clic</button>\n<button onclick=\"revertirTexto()\">Revertir</button>\n\n<script>\nfunction cambiarTexto() {\n    // Tu código aquí\n}\n\nfunction revertirTexto() {\n    // Tu código del mini-reto aquí\n}\n</script>",
         'validation' => "const code = editor.value; return code.includes('function cambiarTexto') && code.includes('function revertirTexto') && code.includes('getElementById') && code.includes('textContent');"
