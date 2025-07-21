@@ -112,7 +112,7 @@ $exercises = [
     <a href=\"#\">Galería</a>
     <a href=\"#\">Contacto</a>
 </nav>",
-        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('nav') && css.includes('display:flex') && css.includes('justify-content');"
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('nav') && css.includes('display: flex') && css.includes('justify-content');"
     ],
     [
         'day' => 9,
@@ -130,7 +130,7 @@ $exercises = [
 </style>",
         'starter_code' => "<style>
     .equipo-pokemon {
-        
+        max-width: 855px;
     }
     .pokemon-card {
         border: 1px solid #ccc;
@@ -148,7 +148,7 @@ $exercises = [
     <div class=\"pokemon-card\">Jigglypuff</div>
     <div class=\"pokemon-card\">Snorlax</div>
 </div>",
-        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('display:flex') && css.includes('flex-wrap:wrap');"
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('display: flex') && css.includes('flex-wrap: wrap');"
     ],
     [
         'day' => 10,
@@ -157,7 +157,7 @@ $exercises = [
         'theory' => '¡Es hora de aplicar tus habilidades de diseño! Este proyecto consiste en replicar una interfaz conocida. Presta atención a los detalles: espaciado, alineación y estructura. Usa `div` para crear las secciones principales (cabecera, galería) y aplica Flexbox para posicionar todo correctamente. ¡El reto es que se parezca lo más posible al original!',
         'example_code' => "<!-- Tu misión es recrear la estructura y estilo de un perfil de Instagram usando HTML y CSS con Flexbox. -->",
         'starter_code' => "<!-- Construye tu clon de perfil de Instagram aquí -->",
-        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('display:flex');"
+        'validation' => "const style = preview.contentDocument.querySelector('style'); if (!style) return false; const css = style.textContent.toLowerCase(); return css.includes('display: flex');"
     ]
 ];
 ?>
