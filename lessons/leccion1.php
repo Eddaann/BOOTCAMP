@@ -43,8 +43,8 @@ $exercises = [
         'day' => 1,
         'title' => '¿Qué es la Web?',
         'objective' => 'Crea un encabezado <h1> que diga "Mi Biografía", un párrafo <p> con tu nombre y edad, y un subtítulo <h2> que diga "Mis Metas".',
-        'theory' => 'HTML es el lenguaje que usamos para crear páginas web. Toda página tiene una estructura básica: <html>, que envuelve todo; <head>, para metadatos como el título de la pestaña; y <body>, donde va todo el contenido visible. Las etiquetas como <h1> (título principal) y <p> (párrafo) nos ayudan a organizar ese contenido.',
-        'example_code' => "<!DOCTYPE html>
+        'theory' => 'HTML es el lenguaje que usamos para crear páginas web. Toda página tiene una estructura básica: &lt;html>, que envuelve todo; &lt;head>, para metadatos como el título de la pestaña; y &lt;body>, donde va todo el contenido visible. Las etiquetas como &lt;h1> (título principal) y &lt;p> (párrafo) nos ayudan a organizar ese contenido.',
+        'example_code' => "&lt;!DOCTYPE html>
 <html>
 <head>
     <title>Título de la Pestaña</title>
@@ -72,7 +72,7 @@ $exercises = [
         'day' => 2,
         'title' => 'Texto y Listas',
         'objective' => 'Crea una lista ordenada (<ol>) con tus 5 series favoritas. Dentro de un <li>, pon el nombre de la serie en negritas (<strong>) y una descripción en cursiva (<em>).',
-        'theory' => 'Además de <h1>, tenemos encabezados del <h2> al <h6> para distintas jerarquías. Para enfatizar texto, usamos <strong> (negrita) y <em> (itálica). Las listas son cruciales: <ol> para listas numeradas (ordenadas) y <ul> para listas con viñetas. Cada elemento de la lista siempre va dentro de una etiqueta <li>.',
+        'theory' => 'Además de &lt;h1>, tenemos encabezados del &lt;h2> al &lt;h6> para distintas jerarquías. Para enfatizar texto, usamos &lt;strong> (negrita) y &lt;em> (itálica). Las listas son cruciales: &lt;ol> para listas numeradas (ordenadas) y &lt;ul> para listas con viñetas. Cada elemento de la lista siempre va dentro de una etiqueta &lt;li>.',
         'example_code' => "<h2>Mi Top 3</h2>\n<ol>\n    <li><strong>Elemento 1:</strong> <em>Descripción 1</em></li>\n    <li>Elemento 2</li>\n    <li>Elemento 3</li>\n</ol>",
         'starter_code' => "<h2>Mi Top 5 Series</h2>\n<ol>\n    <li></li>\n    <li></li>\n    <li></li>\n    <li></li>\n    <li></li>\n</ol>",
         'validation' => "const ol = preview.contentDocument.querySelector('ol'); const lis = preview.contentDocument.querySelectorAll('li'); const strong = preview.contentDocument.querySelector('strong'); const em = preview.contentDocument.querySelector('em'); return ol && lis.length >= 5 && Array.from(lis).every(li => li.textContent.trim() !== '') && strong && em;"
@@ -81,7 +81,7 @@ $exercises = [
         'day' => 3,
         'title' => 'Imágenes y Enlaces',
         'objective' => 'Crea una página de homenaje con una imagen principal, un párrafo, un enlace que se abra en una pestaña nueva y una segunda imagen.',
-        'theory' => 'La etiqueta <img> inserta imágenes. Necesita dos atributos clave: `src` (la URL de la imagen) y `alt` (texto alternativo). La etiqueta <a> crea enlaces. Necesita el atributo `href` (la URL de destino). Para que el enlace se abra en una nueva pestaña, añade `target=\"_blank\"`.',
+        'theory' => 'La etiqueta &lt;img> inserta imágenes. Necesita dos atributos clave: `src` (la URL de la imagen) y `alt` (texto alternativo). La etiqueta &lt;a> crea enlaces. Necesita el atributo `href` (la URL de destino). Para que el enlace se abra en una nueva pestaña, añade `target=&quot;_blank&quot;`.',
         'example_code' => "<img src=\"https://placehold.co/150/38bdf8/ffffff?text=IMG\" alt=\"Texto descriptivo\">\n<a href=\"https://google.com\" target=\"_blank\">Ir a Google</a>",
         'starter_code' => "<h1>Homenaje a...</h1>\n\n<img src=\"\" alt=\"\">\n\n<p></p>\n\n<a href=\"\"></a>\n\n<img src=\"\" alt=\"\">",
         'validation' => "const p = preview.contentDocument.querySelector('p'); const a = preview.contentDocument.querySelector('a'); const imgs = preview.contentDocument.querySelectorAll('img'); return p && p.textContent.trim() !== '' && a && a.href.trim() !== '' && a.target === '_blank' && imgs.length >= 2 && Array.from(imgs).every(img => img.src.trim() !== '' && img.alt.trim() !== '');"
@@ -90,7 +90,7 @@ $exercises = [
         'day' => 4,
         'title' => 'Tablas y Divisores',
         'objective' => 'Crea una tabla con un horario de clases. La tabla debe tener al menos dos filas (<tr>), incluyendo la fila de encabezados (<th>).',
-        'theory' => 'Las tablas organizan datos en filas y columnas. Se crean con <table>. Dentro, <tr> define una fila, <th> una celda de encabezado y <td> una celda de datos. La etiqueta <div> es un contenedor genérico que nos ayuda a agrupar y organizar secciones de nuestra página.',
+        'theory' => 'Las tablas organizan datos en filas y columnas. Se crean con &lt;table>. Dentro, &lt;tr> define una fila, &lt;th> una celda de encabezado y &lt;td> una celda de datos. La etiqueta &lt;div> es un contenedor genérico que nos ayuda a agrupar y organizar secciones de nuestra página.',
         'example_code' => "<div>\n    <h2>Sección 1</h2>\n</div>\n<table>\n    <tr>\n        <th>Hora</th>\n        <th>Actividad</th>\n    </tr>\n    <tr>\n        <td>9:00 AM</td>\n        <td>Desayunar</td>\n    </tr>\n</table>",
         'starter_code' => "<h1>Mi Horario</h1>\n\n<div>\n    <h2>Lunes</h2>\n    <table>\n        <tr>\n            <th>Hora</th>\n            <th>Materia</th>\n        </tr>\n        <tr>\n            <td></td>\n            <td></td>\n        </tr>\n    </table>\n</div>",
         'validation' => "const table = preview.contentDocument.querySelector('table'); const trs = preview.contentDocument.querySelectorAll('tr'); return table && trs.length >= 2;"
@@ -98,7 +98,7 @@ $exercises = [
     [
         'day' => 5,
         'title' => 'Proyecto Semanal 1',
-        'objective' => 'Crea una página "Sobre Mí" completa: título, foto, descripción, lista de hobbies, tabla de comidas favoritas y una nueva sección con una lista de cosas que quieres aprender.',
+        'objective' => 'Crea una página "Sobre Mí" completa: título, foto, descripción, lista no ordenada de hobbies, tabla de comidas favoritas y una nueva sección con una lista no ordenada de cosas que quieres aprender.',
         'theory' => '¡Es hora de unirlo todo! En este proyecto final de la semana, aplicarás todos los conceptos que hemos visto. Demuestra tu dominio de la estructura, texto, listas, multimedia y tablas para crear una página personal completa. ¡No hay una única respuesta correcta, sé creativo!',
         'example_code' => "<!-- ¡Combina todo lo que aprendiste! -->\n<h1>Tu Nombre</h1>\n<img src=\"...\" alt=\"...\">\n<p>...</p>\n<ul>...</ul>\n<table>...</table>",
         'starter_code' => "<!-- ¡Es tu turno de brillar! Construye tu página \"Sobre Mí\" aquí. -->\n",
