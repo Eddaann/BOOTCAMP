@@ -10,23 +10,17 @@ $stmt_user->execute();
 $user = $stmt_user->get_result()->fetch_assoc();
 $stmt_user->close();
 
+// Nueva lógica para obtener el progreso completo de las lecciones
 $completed_lessons = [];
-$sql_lessons = "SELECT lesson_id FROM user_lessons WHERE user_id = ?";
+$sql_lessons = "SELECT lesson_id, points_awarded, completed_steps FROM user_lessons WHERE user_id = ?";
 $stmt_lessons = $conn->prepare($sql_lessons);
 $stmt_lessons->bind_param("i", $user_id);
 $stmt_lessons->execute();
 $lessons_result = $stmt_lessons->get_result();
 while ($row = $lessons_result->fetch_assoc()) {
-    $completed_lessons[$row['lesson_id']] = true;
+    $completed_lessons[$row['lesson_id']] = $row;
 }
 $stmt_lessons->close();
-
-$all_lessons = [];
-$sql_all_lessons = "SELECT id, title, file_path, week FROM lessons ORDER BY id ASC";
-$result_all_lessons = $conn->query($sql_all_lessons);
-while ($row = $result_all_lessons->fetch_assoc()) {
-    $all_lessons[$row['id']] = $row;
-}
 
 $weeks = [
     1 => ['title' => 'Semana 1: Los Cimientos de la Web - HTML', 'color' => 'cyan-400', 'file' => 'lessons/leccion1.php'],
@@ -35,15 +29,22 @@ $weeks = [
     4 => ['title' => 'Semana 4: ¡A Construir! Proyecto Final', 'color' => 'rose-400', 'file' => 'lessons/leccion4.php'],
 ];
 
-// Temas clave de cada semana
+// Temas clave de cada semana, basados en tu plan de estudios
 $weekly_topics = [
-    1 => ['Estructura HTML', 'Texto y Listas', 'Imágenes y Enlaces', 'Tablas y Divisores', 'Proyecto Semanal'],
-    2 => ['Selectores CSS', 'Modelo de Caja', 'Flexbox (Parte 1)', 'Flexbox (Parte 2)', 'Proyecto Semanal'],
-    3 => ['Variables y Funciones', 'Eventos y DOM', 'Manipulación de Estilos', 'Condicionales y Arrays', 'Proyecto Semanal'],
-    4 => ['Planificación', 'Maquetación', 'Interactividad', 'Pulido y Pruebas', '¡Día de Demo!']
+    1 => ['Día 1: ¿Qué es la Web?', 'Día 2: Texto y Listas', 'Día 3: Imágenes y Enlaces', 'Día 4: Tablas y Divisores', 'Día 5: Proyecto Semanal 1'],
+    2 => ['Día 6: Introducción a CSS', 'Día 7: El Modelo de Caja', 'Día 8: Layout con Flexbox (Parte 1)', 'Día 9: Layout con Flexbox (Parte 2)', 'Día 10: Proyecto Semanal 2'],
+    3 => ['Día 11: Introducción a JavaScript', 'Día 12: Funciones y Eventos', 'Día 13: Manipulación del DOM', 'Día 14: Condicionales y Arrays', 'Día 15: Proyecto Semanal 3'],
+    4 => ['Día 16: Planificación del Proyecto', 'Día 17: Maquetación y Estilo Base', 'Día 18: Contenido e Interactividad', 'Día 19: Pulido y Pruebas', 'Día 20: ¡Día de Demo!']
 ];
 
-$highest_completed_lesson = empty($completed_lessons) ? 0 : max(array_keys($completed_lessons));
+// Lógica mejorada para determinar la lección más alta completada
+$highest_completed_lesson = 0;
+foreach ($completed_lessons as $lesson_id => $details) {
+    if ($details['points_awarded'] !== null && $lesson_id > $highest_completed_lesson) {
+        $highest_completed_lesson = $lesson_id;
+    }
+}
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -58,7 +59,6 @@ $conn->close();
         body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; }
         .cta-button { transition: all 0.3s ease; }
         .cta-button:hover { transform: translateY(-2px); }
-        /* La lógica del dropdown ahora se manejará con las clases 'group' y 'group-hover' de Tailwind, por lo que el CSS personalizado ya no es necesario aquí. */
     </style>
 </head>
 <body class="text-white">
@@ -72,7 +72,6 @@ $conn->close();
                 <a href="dashboard.php" class="text-cyan-400 font-semibold">Dashboard</a>
                 <a href="leaderboard.php" class="hover:text-cyan-400 transition-colors">Leaderboard</a>
                 
-                <!-- INICIO DE LA CORRECCIÓN: Se añade la clase 'group' al contenedor principal -->
                 <div class="relative group">
                     <button class="flex items-center space-x-2">
                         <?php 
@@ -84,13 +83,11 @@ $conn->close();
                         <span class="font-semibold"><?php echo htmlspecialchars($user['username']); ?></span>
                         <svg class="h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
-                    <!-- El menú ahora se hace visible cuando se hace hover sobre el 'group' (el div padre) -->
                     <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
                         <a href="profile.php" class="block px-4 py-2 text-sm text-gray-300 hover:bg-cyan-600 hover:text-white">Mi Perfil</a>
                         <a href="logout.php" class="block px-4 py-2 text-sm text-gray-300 hover:bg-cyan-600 hover:text-white">Cerrar Sesión</a>
                     </div>
                 </div>
-                <!-- FIN DE LA CORRECCIÓN -->
             </nav>
         </div>
     </header>
@@ -105,25 +102,30 @@ $conn->close();
             <div class="lg:col-span-2 space-y-8">
                 <?php foreach ($weeks as $week_num => $week_data): ?>
                 <?php
-                    $is_completed = isset($completed_lessons[$week_num]);
+                    $is_completed = isset($completed_lessons[$week_num]) && $completed_lessons[$week_num]['points_awarded'] !== null;
                     $is_unlocked = ($week_num <= $highest_completed_lesson + 1);
                     $color_parts = explode('-', $week_data['color']);
                     $main_color = $color_parts[0];
                 ?>
                 <div class="bg-gray-900 rounded-xl p-6 shadow-lg transition-all duration-300 <?php echo $is_unlocked ? 'opacity-100' : 'opacity-50'; ?>">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                        <div>
+                        <div class="flex-grow">
                             <h2 class="text-2xl font-bold text-<?php echo $week_data['color']; ?>">
                                 <?php echo $week_data['title']; ?>
                             </h2>
-                            <!-- Lista de Temas -->
-                            <ul class="mt-3 space-y-1 text-sm text-gray-400 list-disc list-inside">
-                                <?php foreach ($weekly_topics[$week_num] as $topic): ?>
-                                    <li><?php echo $topic; ?></li>
-                                <?php endforeach; ?>
-                            </ul>
+                            <div class="mt-4 border-l-2 border-gray-700 pl-4">
+                                <h3 class="text-sm font-semibold text-gray-400 mb-2">Temas de la semana:</h3>
+                                <ul class="space-y-1 text-sm text-gray-300">
+                                    <?php foreach ($weekly_topics[$week_num] as $topic): ?>
+                                        <li class="flex items-center">
+                                            <svg class="h-3 w-3 mr-2 text-<?php echo $main_color; ?>-400 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" /></svg>
+                                            <?php echo $topic; ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="mt-4 sm:mt-0 sm:ml-6 flex-shrink-0">
+                        <div class="mt-6 sm:mt-0 sm:ml-6 flex-shrink-0">
                              <?php if ($is_unlocked): ?>
                                 <?php if ($is_completed): ?>
                                     <a href="<?php echo $week_data['file']; ?>" class="flex items-center justify-center w-full sm:w-auto bg-green-600 text-white font-bold py-3 px-6 rounded-lg cta-button">
@@ -160,9 +162,9 @@ $conn->close();
                         <div>
                             <div class="flex justify-between mb-1">
                                 <span class="text-base font-medium text-white">Semanas Completadas</span>
-                                <span class="text-sm font-medium text-white"><?php echo count($completed_lessons); ?> de <?php echo count($weeks); ?></span>
+                                <span class="text-sm font-medium text-white"><?php echo count(array_filter($completed_lessons, fn($l) => $l['points_awarded'] !== null)); ?> de <?php echo count($weeks); ?></span>
                             </div>
-                            <?php $progress_percentage = count($weeks) > 0 ? (count($completed_lessons) / count($weeks)) * 100 : 0; ?>
+                            <?php $progress_percentage = count($weeks) > 0 ? (count(array_filter($completed_lessons, fn($l) => $l['points_awarded'] !== null)) / count($weeks)) * 100 : 0; ?>
                             <div class="w-full bg-gray-700 rounded-full h-2.5">
                                 <div class="bg-cyan-500 h-2.5 rounded-full" style="width: <?php echo $progress_percentage; ?>%"></div>
                             </div>
@@ -176,6 +178,5 @@ $conn->close();
             </div>
         </div>
     </main>
-
 </body>
 </html>
