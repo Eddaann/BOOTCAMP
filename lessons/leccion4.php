@@ -43,7 +43,7 @@ $exercises = [
         'day' => 16,
         'title' => 'Planificación del Proyecto',
         'objective' => 'Elige tu idea de proyecto y crea el archivo HTML con la estructura básica de todas las secciones que tendrá (ej. Inicio, Sobre Mí, Galería, Contacto). Extra: Define la paleta de colores y las fuentes que usarás en un comentario en tu CSS.',
-        'theory' => 'Todo gran proyecto empieza con un plan. Antes de escribir una línea de código, piensa: ¿qué quiero construir? Un portafolio, una página para un negocio ficticio, un sitio de fans... Dibuja un boceto simple en papel. Hoy, nos enfocaremos en crear el "esqueleto" de tu proyecto usando solo etiquetas HTML semánticas como `<header>`, `<main>`, `<section>` y `<footer>`.',
+        'theory' => 'Todo gran proyecto empieza con un plan. Antes de escribir una línea de código, piensa: ¿qué quiero construir? Un portafolio, una página para un negocio ficticio, un sitio de fans... Dibuja un boceto simple en papel. Hoy, nos enfocaremos en crear el "esqueleto" de tu proyecto usando solo etiquetas HTML semánticas como `&lt;header>`, `&lt;main>`, `&lt;section>` y `&lt;footer>`.',
         'example_code' => "<header></header>\n<main>\n    <section id=\"inicio\"></section>\n    <section id=\"galeria\"></section>\n</main>\n<footer></footer>",
         'starter_code' => "\n",
         'validation' => "const main = preview.contentDocument.querySelector('main'); const section = preview.contentDocument.querySelector('section'); return main && section;"
