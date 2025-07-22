@@ -23,18 +23,18 @@ while ($row = $lessons_result->fetch_assoc()) {
 $stmt_lessons->close();
 
 $weeks = [
-    1 => ['title' => 'Semana 1: Los Cimientos de la Web - HTML', 'color' => 'cyan-400', 'file' => 'lessons/leccion1.php'],
-    2 => ['title' => 'Semana 2: Dando Estilo con CSS', 'color' => 'indigo-400', 'file' => 'lessons/leccion2.php'],
-    3 => ['title' => 'Semana 3: La Magia de JavaScript', 'color' => 'fuchsia-400', 'file' => 'lessons/leccion3.php'],
-    4 => ['title' => 'Semana 4: ¡A Construir! Proyecto Final', 'color' => 'rose-400', 'file' => 'lessons/leccion4.php'],
+    1 => ['title' => 'dia 1: Los Cimientos de la Web - HTML', 'color' => 'cyan-400', 'file' => 'lessons/leccion1.php'],
+    2 => ['title' => 'dia 1: Dando Estilo con CSS', 'color' => 'indigo-400', 'file' => 'lessons/leccion2.php'],
+    3 => ['title' => 'dia 2: La Magia de JavaScript', 'color' => 'fuchsia-400', 'file' => 'lessons/leccion3.php'],
+    4 => ['title' => 'dia 2: ¡A Construir! Proyecto Final', 'color' => 'rose-400', 'file' => 'lessons/leccion4.php'],
 ];
 
 // Temas clave de cada semana, basados en tu plan de estudios
 $weekly_topics = [
-    1 => ['Día 1: ¿Qué es la Web?', 'Día 2: Texto y Listas', 'Día 3: Imágenes y Enlaces', 'Día 4: Tablas y Divisores', 'Día 5: Proyecto Semanal 1'],
-    2 => ['Día 6: Introducción a CSS', 'Día 7: El Modelo de Caja', 'Día 8: Layout con Flexbox (Parte 1)', 'Día 9: Layout con Flexbox (Parte 2)', 'Día 10: Proyecto Semanal 2'],
-    3 => ['Día 11: Introducción a JavaScript', 'Día 12: Funciones y Eventos', 'Día 13: Manipulación del DOM', 'Día 14: Condicionales y Arrays', 'Día 15: Proyecto Semanal 3'],
-    4 => ['Día 16: Planificación del Proyecto', 'Día 17: Maquetación y Estilo Base', 'Día 18: Contenido e Interactividad', 'Día 19: Pulido y Pruebas', 'Día 20: ¡Día de Demo!']
+    1 => ['leccion 1: ¿Qué es la Web?', 'leccion 2: Texto y Listas', 'leccion 3: Imágenes y Enlaces', 'leccion 4: Tablas y Divisores', 'leccion 5: Proyecto de seccion 1'],
+    2 => ['leccion 6: Introducción a CSS', 'leccion 7: El Modelo de Caja', 'leccion 8: Layout con Flexbox (Parte 1)', 'leccion 9: Layout con Flexbox (Parte 2)', 'leccion 10: Proyecto de seccion  2'],
+    3 => ['leccion 11: Introducción a JavaScript', 'leccion 12: Funciones y Eventos', 'leccion 13: Manipulación del DOM', 'leccion 14: Condicionales y Arrays', 'leccion 15: Proyecto de seccion 3'],
+    4 => ['leccion 16: Planificación del Proyecto', 'leccion 17: Maquetación y Estilo Base', 'leccion 18: Contenido e Interactividad', 'leccion 19: Pulido y Pruebas', 'leccion 20: ¡Día de Demo!']
 ];
 
 // Lógica mejorada para determinar la lección más alta completada
@@ -114,7 +114,7 @@ $conn->close();
                                 <?php echo $week_data['title']; ?>
                             </h2>
                             <div class="mt-4 border-l-2 border-gray-700 pl-4">
-                                <h3 class="text-sm font-semibold text-gray-400 mb-2">Temas de la semana:</h3>
+                                <h3 class="text-sm font-semibold text-gray-400 mb-2">Temas de las lecciones:</h3>
                                 <ul class="space-y-1 text-sm text-gray-300">
                                     <?php foreach ($weekly_topics[$week_num] as $topic): ?>
                                         <li class="flex items-center">
@@ -134,7 +134,7 @@ $conn->close();
                                     </a>
                                 <?php else: ?>
                                     <a href="<?php echo $week_data['file']; ?>" class="w-full sm:w-auto bg-<?php echo $main_color; ?>-600 hover:bg-<?php echo $main_color; ?>-700 text-white font-bold py-3 px-6 rounded-lg cta-button shadow-lg shadow-<?php echo $main_color; ?>-500/20">
-                                        Empezar Semana
+                                        Empezar lecciones
                                     </a>
                                 <?php endif; ?>
                             <?php else: ?>
@@ -161,7 +161,7 @@ $conn->close();
                     <div class="space-y-4">
                         <div>
                             <div class="flex justify-between mb-1">
-                                <span class="text-base font-medium text-white">Semanas Completadas</span>
+                                <span class="text-base font-medium text-white">Lecciones Completadas</span>
                                 <span class="text-sm font-medium text-white"><?php echo count(array_filter($completed_lessons, fn($l) => $l['points_awarded'] !== null)); ?> de <?php echo count($weeks); ?></span>
                             </div>
                             <?php $progress_percentage = count($weeks) > 0 ? (count(array_filter($completed_lessons, fn($l) => $l['points_awarded'] !== null)) / count($weeks)) * 100 : 0; ?>

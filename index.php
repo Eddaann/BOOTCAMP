@@ -62,7 +62,7 @@ if (isset($_SESSION["user_id"])) {
             Convierte tus Ideas en <br> <span class="hero-gradient-text">Páginas Web Increíbles</span>
         </h2>
         <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-400">
-            Únete a nuestro bootcamp completo de 4 semanas y aprende a construir sitios web interactivos desde cero. No necesitas experiencia, ¡solo ganas de crear!
+            Únete a nuestro bootcamp completo de 2 dias y aprende a construir sitios web interactivos desde cero. No necesitas experiencia, ¡solo ganas de crear!
         </p>
         <div class="mt-8">
             <a href="register.php" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-4 px-8 rounded-lg text-lg cta-button inline-block">
